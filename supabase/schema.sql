@@ -81,6 +81,17 @@ drop policy if exists "public read published tournaments" on tournaments;
 create policy "public read published tournaments" on tournaments
   for select using (status <> 'draft');
 
+-- ---------- สิทธิ์การเข้าถึงตาราง (Supabase roles) ----------
+-- จำเป็นต้อง grant ให้ role ที่ PostgREST ใช้ ไม่งั้นจะขึ้น "permission denied"
+grant usage on schema public to anon, authenticated, service_role;
+grant select on all tables in schema public to anon, authenticated;
+grant all privileges on all tables in schema public to service_role;
+-- ให้ตารางที่สร้างในอนาคตได้สิทธิ์นี้อัตโนมัติด้วย
+alter default privileges in schema public
+  grant select on tables to anon, authenticated;
+alter default privileges in schema public
+  grant all on tables to service_role;
+
 -- ============================================================
 -- ข้อมูลตัวอย่าง (ลบออกได้ถ้าไม่ต้องการ)
 -- ============================================================
