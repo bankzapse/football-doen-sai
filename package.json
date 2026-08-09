@@ -9,7 +9,8 @@
     "lint": "next lint",
     "db:check": "node --env-file=.env.local scripts/check-supabase.mjs",
     "db:seed": "node --env-file=.env.local scripts/seed-supabase.mjs",
-    "db:check:community": "node --env-file=.env.local scripts/check-community.mjs"
+    "db:check:community": "node --env-file=.env.local scripts/check-community.mjs",
+    "db:check:rt": "node --env-file=.env.local scripts/check-results-teams.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.4",

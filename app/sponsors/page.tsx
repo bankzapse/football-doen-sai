@@ -14,6 +14,8 @@ const TIER_LABEL: Record<string, string> = {
   standard: "สปอนเซอร์",
 };
 
+export const revalidate = 300;
+
 export default async function SponsorsPage() {
   const sponsors = await getSponsors();
   const byTier = (tier: string) => sponsors.filter((s) => s.tier === tier);

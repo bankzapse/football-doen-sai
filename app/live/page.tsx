@@ -10,6 +10,8 @@ export const metadata: Metadata = {
   description: "รวมลิงก์ถ่ายทอดสดฟุตบอลเดินสายทั่วไทย ดูสดทุกสนามในที่เดียว",
 };
 
+export const revalidate = 120;
+
 export default async function LivePage() {
   const tournaments = await getTournaments();
   const live = tournaments.filter((t) => t.status === "live" && t.live_url);

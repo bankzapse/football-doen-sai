@@ -11,6 +11,8 @@ export const metadata: Metadata = {
 const FALLBACK =
   "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=1200&q=60";
 
+export const revalidate = 300;
+
 export default async function VenuesPage() {
   const venues = await getVenues();
 

@@ -18,6 +18,8 @@ export async function generateMetadata({
   };
 }
 
+export const revalidate = 300;
+
 const POS_LABEL: Record<string, string> = { GK: "ผู้รักษาประตู", DF: "กองหลัง", MF: "กองกลาง", FW: "กองหน้า" };
 
 export default async function TeamPage({ params }: { params: Promise<{ id: string }> }) {

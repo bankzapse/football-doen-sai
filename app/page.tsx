@@ -12,6 +12,8 @@ import {
 
 const TH_MONTHS = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
 
+export const revalidate = 300; // อัปเดตข้อมูลอัตโนมัติทุก 5 นาที
+
 export default async function HomePage() {
   const [tournaments, sponsors] = await Promise.all([getTournaments(), getSponsors()]);
 

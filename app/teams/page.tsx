@@ -9,6 +9,8 @@ export const metadata: Metadata = {
   description: "ทำเนียบทีมฟุตบอลเดินสายทั่วไทย พร้อมรายชื่อผู้จัดการทีม โค้ช และนักเตะ",
 };
 
+export const revalidate = 300;
+
 export default async function TeamsPage() {
   const teams = await getTeams();
 

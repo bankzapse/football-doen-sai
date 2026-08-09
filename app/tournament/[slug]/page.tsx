@@ -17,6 +17,8 @@ import {
 const FALLBACK_IMG =
   "https://images.unsplash.com/photo-1459865264687-595d652de67e?auto=format&fit=crop&w=1600&q=60";
 
+export const revalidate = 300;
+
 export async function generateStaticParams() {
   const tournaments = await getTournaments();
   return tournaments.map((t) => ({ slug: t.slug }));
