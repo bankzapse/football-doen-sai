@@ -4,6 +4,7 @@ import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import Logo from "@/components/Logo";
 
 function LoginForm() {
   const router = useRouter();
@@ -34,9 +35,9 @@ function LoginForm() {
     <div className="login-wrap">
       <form className="login-card" onSubmit={onSubmit}>
         <Link href="/" className="brand" style={{ justifyContent: "center", marginBottom: 8 }}>
-          <span className="logo">⚽</span>
+          <Logo size={40} />
           <span>
-            เดินสาย<span className="hi">FC</span>
+            FDS <span className="hi">Cup</span>
           </span>
         </Link>
         <h1>เข้าสู่ระบบหลังบ้าน</h1>

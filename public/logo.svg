@@ -1,0 +1,27 @@
+<svg width="560" height="170" viewBox="0 0 560 170" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="shield" x1="30" y1="20" x2="150" y2="150" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#18b64c"/>
+      <stop offset="1" stop-color="#0b7a2f"/>
+    </linearGradient>
+  </defs>
+
+  <!-- MARK -->
+  <g transform="translate(20,18)">
+    <path d="M67 4 118 22v39C118 92 97 114 67 125 37 114 16 92 16 61V22L67 4Z" fill="url(#shield)"/>
+    <path d="M67 4 118 22v39C118 92 97 114 67 125 37 114 16 92 16 61V22L67 4Z" stroke="#ffffff" stroke-opacity="0.28" stroke-width="3"/>
+    <text x="67" y="56" text-anchor="middle" font-family="system-ui, 'Segoe UI', sans-serif" font-size="35" font-weight="900" letter-spacing="1" fill="#ffffff">FDS</text>
+    <circle cx="67" cy="88" r="19" fill="#f4c247"/>
+    <circle cx="67" cy="88" r="19" stroke="#0b7a2f" stroke-opacity="0.35" stroke-width="2"/>
+    <circle cx="67" cy="88" r="12.8" fill="#ffffff"/>
+    <path d="M67 77l5.4 3.9-2.1 6.3h-6.6l-2.1-6.3L67 77Z" fill="#12211b"/>
+    <path d="M58.8 92.2l2.5 6.9 5.7 1.9 5.7-1.9 2.5-6.9-4.2-3.1h-8.3l-4.1 3.1Z" fill="#12211b" fill-opacity="0.85"/>
+  </g>
+
+  <!-- WORDMARK -->
+  <g transform="translate(168,0)">
+    <text x="0" y="82" font-family="system-ui, 'Segoe UI', sans-serif" font-size="58" font-weight="900" letter-spacing="1" fill="#12211b">FDS <tspan fill="#12a13f">CUP</tspan></text>
+    <text x="2" y="116" font-family="system-ui, 'Segoe UI', sans-serif" font-size="21" font-weight="700" letter-spacing="4" fill="#5b6e66">FOOTBALL เดินสาย</text>
+    <rect x="4" y="128" width="300" height="3" rx="1.5" fill="#f4c247"/>
+  </g>
+</svg>

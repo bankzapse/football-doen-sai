@@ -82,9 +82,12 @@ export default async function AdminDashboard() {
                     {STATUS_META[t.status].label}
                   </span>
                 </td>
-                <td>
+                <td style={{ display: "flex", gap: 6 }}>
                   <Link href={`/tournament/${t.slug}`} className="rowbtn">
-                    ดูหน้าเว็บ
+                    ดูเว็บ
+                  </Link>
+                  <Link href={`/admin/results/${t.id}`} className="rowbtn">
+                    ผล
                   </Link>
                 </td>
               </tr>

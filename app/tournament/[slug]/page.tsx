@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { getTournamentBySlug, getTournaments } from "@/lib/data";
+import { getTournamentBySlug, getTournaments, getMatches, getStandings } from "@/lib/data";
 import { getThreadsForTournament, CATEGORY_LABEL, type ThreadCategory } from "@/lib/community";
 import {
   formatBaht,
@@ -69,6 +69,14 @@ export default async function TournamentPage({
   const cover = t.image_url || FALLBACK_IMG;
   const embed = t.live_url ? toYouTubeEmbed(t.live_url) : null;
   const threads = await getThreadsForTournament(t.id);
+  const isFinished = t.status === "finished";
+  const matches = isFinished ? await getMatches(t.id) : [];
+  const standings = isFinished ? await getStandings(t.id) : [];
+  const hasResults = isFinished && (t.champion || matches.length > 0 || standings.length > 0);
+
+  // จัดกลุ่มตารางคะแนนตาม group_name
+  const groups: Record<string, typeof standings> = {};
+  for (const s of standings) (groups[s.group_name] ??= []).push(s);
 
   const prizeRows = [
     { label: "ชนะเลิศ", value: t.prize_champion },
@@ -247,6 +255,91 @@ export default async function TournamentPage({
             </div>
           </aside>
         </div>
+
+        {/* ผลการแข่งขัน (เฉพาะรายการที่จบแล้ว) */}
+        {hasResults ? (
+          <section style={{ paddingBottom: 10 }}>
+            <div className="section-title"><h2>ผลการแข่งขัน</h2></div>
+
+            {t.champion ? (
+              <div className="podium">
+                <div className="podium-item gold">
+                  <span className="medal">🏆</span>
+                  <div className="muted">ชนะเลิศ</div>
+                  <b>{t.champion}</b>
+                </div>
+                {t.runner_up ? (
+                  <div className="podium-item silver">
+                    <span className="medal">🥈</span>
+                    <div className="muted">รองชนะเลิศ</div>
+                    <b>{t.runner_up}</b>
+                  </div>
+                ) : null}
+                {t.third_place ? (
+                  <div className="podium-item bronze">
+                    <span className="medal">🥉</span>
+                    <div className="muted">อันดับ 3</div>
+                    <b>{t.third_place}</b>
+                  </div>
+                ) : null}
+                {t.top_scorer ? (
+                  <div className="podium-item">
+                    <span className="medal">👟</span>
+                    <div className="muted">ดาวซัลโว</div>
+                    <b>{t.top_scorer}</b>
+                  </div>
+                ) : null}
+              </div>
+            ) : null}
+
+            {Object.keys(groups).length > 0 ? (
+              <div className="prose">
+                <h2 style={{ fontSize: 16 }}>ตารางคะแนน</h2>
+                {Object.entries(groups).map(([g, rows]) => (
+                  <div key={g} className="tablescroll" style={{ marginBottom: 16 }}>
+                    <div className="muted" style={{ fontWeight: 800, margin: "8px 0 6px" }}>{g}</div>
+                    <table className="data tnum" style={{ minWidth: 460 }}>
+                      <thead>
+                        <tr>
+                          <th style={{ textAlign: "left" }}>ทีม</th>
+                          <th>แข่ง</th><th>ชนะ</th><th>เสมอ</th><th>แพ้</th><th>ได้-เสีย</th><th>แต้ม</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {rows.map((s, i) => (
+                          <tr key={s.id}>
+                            <td style={{ textAlign: "left" }}>{i + 1}. <b>{s.team_name}</b></td>
+                            <td>{s.played}</td><td>{s.win}</td><td>{s.draw}</td><td>{s.loss}</td>
+                            <td>{s.gf}-{s.ga}</td><td><b>{s.points}</b></td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ))}
+              </div>
+            ) : null}
+
+            {matches.length > 0 ? (
+              <div className="prose">
+                <h2 style={{ fontSize: 16 }}>ผลรายคู่</h2>
+                <div className="match-list">
+                  {matches.map((m) => (
+                    <div key={m.id} className="match-row">
+                      <span className="match-round muted">{m.round}</span>
+                      <span className="match-team home">{m.team_home}</span>
+                      <span className="match-score tnum">
+                        {m.score_home ?? "-"} : {m.score_away ?? "-"}
+                      </span>
+                      <span className="match-team away">{m.team_away}</span>
+                      {m.note ? <span className="match-note muted">{m.note}</span> : null}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+          </section>
+        ) : null}
 
         {/* กระทู้พูดคุย/หาคู่แข่ง เกี่ยวกับรายการนี้ */}
         <section style={{ paddingBottom: 20 }}>

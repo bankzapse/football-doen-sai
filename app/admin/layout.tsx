@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Logo from "@/components/Logo";
 import { getCurrentUser } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
@@ -13,9 +14,9 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     <div className="admin-shell">
       <aside className="admin-side">
         <Link href="/" className="brand">
-          <span className="logo">⚽</span>
+          <Logo size={32} />
           <span>
-            เดินสาย<span className="hi">FC</span>
+            FDS <span className="hi">Cup</span>
           </span>
         </Link>
 
@@ -25,6 +26,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         <div className="grp">จัดการข้อมูล</div>
         <Link href="/admin">รายการแข่งขัน</Link>
         <Link href="/admin/tournaments/new">+ เพิ่มรายการใหม่</Link>
+        <Link href="/admin/teams">ทีม / นักเตะ</Link>
         <Link href="/venues">สนามแข่ง</Link>
         <Link href="/sponsors">สปอนเซอร์</Link>
 

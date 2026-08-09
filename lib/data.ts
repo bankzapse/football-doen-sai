@@ -1,6 +1,6 @@
 import { getSupabase } from "./supabase";
 import { seedTournaments, seedVenues, seedSponsors } from "./seed";
-import type { Tournament, Venue, Sponsor } from "./types";
+import type { Tournament, Venue, Sponsor, Match, Standing } from "./types";
 
 const TOURNAMENT_SELECT = "*, venue:venues(*)";
 
@@ -58,6 +58,37 @@ export async function getTournamentById(id: string): Promise<Tournament | null> 
 export async function getLiveTournaments(): Promise<Tournament[]> {
   const all = await getTournaments();
   return all.filter((t) => t.status === "live" && t.live_url);
+}
+
+export async function getFinishedTournaments(): Promise<Tournament[]> {
+  const all = await getTournaments();
+  return all
+    .filter((t) => t.status === "finished")
+    .sort((a, b) => (b.match_start || "").localeCompare(a.match_start || ""));
+}
+
+export async function getMatches(tournamentId: string): Promise<Match[]> {
+  const sb = getSupabase();
+  if (!sb) return [];
+  const { data } = await sb
+    .from("matches")
+    .select("*")
+    .eq("tournament_id", tournamentId)
+    .order("sort", { ascending: true });
+  return (data as Match[]) ?? [];
+}
+
+export async function getStandings(tournamentId: string): Promise<Standing[]> {
+  const sb = getSupabase();
+  if (!sb) return [];
+  const { data } = await sb
+    .from("standings")
+    .select("*")
+    .eq("tournament_id", tournamentId)
+    .order("group_name", { ascending: true })
+    .order("points", { ascending: false })
+    .order("sort", { ascending: true });
+  return (data as Standing[]) ?? [];
 }
 
 export async function getVenues(): Promise<Venue[]> {

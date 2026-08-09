@@ -53,4 +53,57 @@ export interface Tournament {
   organizer_line: string | null;
   venue_id: string | null;
   venue?: Venue | null;
+  // ผลการแข่งขัน (สำหรับรายการที่จบแล้ว)
+  champion?: string | null;
+  runner_up?: string | null;
+  third_place?: string | null;
+  top_scorer?: string | null;
+}
+
+export interface Match {
+  id: string;
+  tournament_id: string;
+  round: string;
+  team_home: string;
+  team_away: string;
+  score_home: number | null;
+  score_away: number | null;
+  note: string | null;
+  sort: number;
+}
+
+export interface Standing {
+  id: string;
+  tournament_id: string;
+  group_name: string;
+  team_name: string;
+  played: number;
+  win: number;
+  draw: number;
+  loss: number;
+  gf: number;
+  ga: number;
+  points: number;
+  sort: number;
+}
+
+export interface Team {
+  id: string;
+  name: string;
+  province: string | null;
+  logo_url: string | null;
+  manager_name: string | null;
+  coach_name: string | null;
+  coach2_name: string | null;
+  players?: Player[];
+}
+
+export interface Player {
+  id: string;
+  team_id: string;
+  name: string;
+  number: number | null;
+  position: string | null;
+  photo_url: string | null;
+  sort: number;
 }

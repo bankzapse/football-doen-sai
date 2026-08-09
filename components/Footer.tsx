@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Logo from "./Logo";
 
 export default function Footer() {
   return (
@@ -6,9 +7,9 @@ export default function Footer() {
       <div className="wrap foot-grid">
         <div>
           <div className="brand" style={{ marginBottom: 10 }}>
-            <span className="logo">⚽</span>
+            <Logo size={34} />
             <span>
-              เดินสาย<span className="hi">FC</span>
+              FDS <span className="hi">Cup</span>
             </span>
           </div>
           <p style={{ maxWidth: "34ch", margin: 0 }}>
@@ -19,6 +20,8 @@ export default function Footer() {
           <h5>รายการ</h5>
           <Link href="/">กำลังรับสมัคร</Link>
           <Link href="/live">แข่งวันนี้ / ถ่ายทอดสด</Link>
+          <Link href="/results">ผลการแข่งขัน</Link>
+          <Link href="/teams">ทำเนียบทีม</Link>
           <Link href="/venues">สนามแข่ง</Link>
         </div>
         <div>

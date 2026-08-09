@@ -105,6 +105,157 @@ export async function createTournament(formData: FormData) {
   redirect("/admin?created=1");
 }
 
+function numOrNull(v: FormDataEntryValue | null): number | null {
+  const s = String(v ?? "").trim();
+  if (!s) return null;
+  const n = Number(s.replace(/[^0-9.-]/g, ""));
+  return isNaN(n) ? null : n;
+}
+
+async function requireUser(next: string) {
+  const user = await getCurrentUser();
+  if (!user) redirect(`/login?next=${next}`);
+}
+
+// ---------- ผลการแข่งขัน ----------
+export async function setWinners(formData: FormData) {
+  await requireUser("/admin");
+  const sb = getSupabaseAdmin();
+  const id = str(formData.get("tournament_id"));
+  if (sb && id) {
+    await sb
+      .from("tournaments")
+      .update({
+        champion: str(formData.get("champion")),
+        runner_up: str(formData.get("runner_up")),
+        third_place: str(formData.get("third_place")),
+        top_scorer: str(formData.get("top_scorer")),
+      })
+      .eq("id", id);
+    revalidatePath("/results");
+    revalidatePath(`/admin/results/${id}`);
+  }
+  redirect(`/admin/results/${id}`);
+}
+
+export async function addMatch(formData: FormData) {
+  await requireUser("/admin");
+  const sb = getSupabaseAdmin();
+  const id = str(formData.get("tournament_id"));
+  if (sb && id) {
+    await sb.from("matches").insert({
+      tournament_id: id,
+      round: str(formData.get("round")) || "รอบแบ่งกลุ่ม",
+      team_home: str(formData.get("team_home")) || "-",
+      team_away: str(formData.get("team_away")) || "-",
+      score_home: numOrNull(formData.get("score_home")),
+      score_away: numOrNull(formData.get("score_away")),
+      note: str(formData.get("note")),
+      sort: numOrNull(formData.get("sort")) ?? 0,
+    });
+    revalidatePath(`/admin/results/${id}`);
+  }
+  redirect(`/admin/results/${id}`);
+}
+
+export async function deleteMatch(formData: FormData) {
+  await requireUser("/admin");
+  const sb = getSupabaseAdmin();
+  const id = str(formData.get("id"));
+  const tid = str(formData.get("tournament_id"));
+  if (sb && id) {
+    await sb.from("matches").delete().eq("id", id);
+    revalidatePath(`/admin/results/${tid}`);
+  }
+  redirect(`/admin/results/${tid}`);
+}
+
+export async function addStanding(formData: FormData) {
+  await requireUser("/admin");
+  const sb = getSupabaseAdmin();
+  const id = str(formData.get("tournament_id"));
+  if (sb && id) {
+    await sb.from("standings").insert({
+      tournament_id: id,
+      group_name: str(formData.get("group_name")) || "กลุ่ม A",
+      team_name: str(formData.get("team_name")) || "-",
+      played: numOrNull(formData.get("played")) ?? 0,
+      win: numOrNull(formData.get("win")) ?? 0,
+      draw: numOrNull(formData.get("draw")) ?? 0,
+      loss: numOrNull(formData.get("loss")) ?? 0,
+      gf: numOrNull(formData.get("gf")) ?? 0,
+      ga: numOrNull(formData.get("ga")) ?? 0,
+      points: numOrNull(formData.get("points")) ?? 0,
+      sort: numOrNull(formData.get("sort")) ?? 0,
+    });
+    revalidatePath(`/admin/results/${id}`);
+  }
+  redirect(`/admin/results/${id}`);
+}
+
+export async function deleteStanding(formData: FormData) {
+  await requireUser("/admin");
+  const sb = getSupabaseAdmin();
+  const id = str(formData.get("id"));
+  const tid = str(formData.get("tournament_id"));
+  if (sb && id) {
+    await sb.from("standings").delete().eq("id", id);
+    revalidatePath(`/admin/results/${tid}`);
+  }
+  redirect(`/admin/results/${tid}`);
+}
+
+// ---------- ทีม / นักเตะ ----------
+export async function createTeam(formData: FormData) {
+  await requireUser("/admin/teams/new");
+  const sb = getSupabaseAdmin();
+  if (!sb) redirect("/admin/teams/new?error=nodb");
+
+  const { data: team, error } = await sb!
+    .from("teams")
+    .insert({
+      name: str(formData.get("name")) || "ทีมใหม่",
+      province: str(formData.get("province")),
+      manager_name: str(formData.get("manager_name")),
+      coach_name: str(formData.get("coach_name")),
+      coach2_name: str(formData.get("coach2_name")),
+    })
+    .select("id")
+    .single();
+
+  if (error || !team) redirect(`/admin/teams/new?error=${encodeURIComponent(error?.message || "insert")}`);
+
+  const names = formData.getAll("player_name").map((v) => String(v).trim());
+  const numbers = formData.getAll("player_number");
+  const positions = formData.getAll("player_position");
+  const rows = names
+    .map((name, i) => ({
+      team_id: team!.id,
+      name,
+      number: numOrNull(numbers[i] ?? null),
+      position: str(positions[i] ?? null),
+      sort: i + 1,
+    }))
+    .filter((r) => r.name.length > 0);
+  if (rows.length) await sb!.from("players").insert(rows);
+
+  revalidatePath("/teams");
+  revalidatePath("/admin/teams");
+  redirect("/admin/teams");
+}
+
+export async function deleteTeam(formData: FormData) {
+  await requireUser("/admin/teams");
+  const sb = getSupabaseAdmin();
+  const id = str(formData.get("id"));
+  if (sb && id) {
+    await sb.from("teams").delete().eq("id", id);
+    revalidatePath("/teams");
+    revalidatePath("/admin/teams");
+  }
+  redirect("/admin/teams");
+}
+
 export async function deleteThread(formData: FormData) {
   const user = await getCurrentUser();
   if (!user) redirect("/login?next=/admin/community");

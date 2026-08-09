@@ -1,21 +1,23 @@
 import Link from "next/link";
+import Logo from "./Logo";
 
 export default function Header() {
   return (
     <header className="site-header">
       <div className="wrap header-inner">
         <Link href="/" className="brand">
-          <span className="logo">⚽</span>
+          <Logo size={38} />
           <span>
-            เดินสาย<span className="hi">FC</span>
-            <small>DOENSAI HUB</small>
+            FDS <span className="hi">Cup</span>
+            <small>FOOTBALL เดินสาย</small>
           </span>
         </Link>
         <nav className="nav">
           <Link href="/">รายการแข่ง</Link>
           <Link href="/live">ถ่ายทอดสด</Link>
+          <Link href="/results">ผลแข่ง</Link>
+          <Link href="/teams">ทีม</Link>
           <Link href="/community">ชุมชน</Link>
-          <Link href="/venues">สนามแข่ง</Link>
           <Link href="/sponsors">สปอนเซอร์</Link>
         </nav>
         <div className="header-cta">
