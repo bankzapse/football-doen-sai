@@ -140,8 +140,14 @@ export default async function NewTournamentPage({
             <span className="hint">ถ้าเป็น YouTube ระบบจะฝังวิดีโอในหน้ารายการอัตโนมัติ</span>
           </div>
           <div className="field full">
-            <label>ลิงก์รูปภาพ / แบ็คกราวด์ (SEO)</label>
+            <label>อัปโหลดโปสเตอร์ / รูปภาพ</label>
+            <input name="poster_file" type="file" accept="image/*" />
+            <span className="hint">อัปโหลดไฟล์รูปโปสเตอร์ได้เลย (เก็บใน Supabase Storage)</span>
+          </div>
+          <div className="field full">
+            <label>หรือใส่ลิงก์รูปภาพ / แบ็คกราวด์ (SEO)</label>
             <input name="image_url" placeholder="https://images.unsplash.com/..." />
+            <span className="hint">ถ้าอัปโหลดไฟล์ด้านบนแล้ว ช่องนี้จะถูกข้าม</span>
           </div>
 
           <div className="field">

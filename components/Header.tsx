@@ -14,6 +14,7 @@ export default function Header() {
         <nav className="nav">
           <Link href="/">รายการแข่ง</Link>
           <Link href="/live">ถ่ายทอดสด</Link>
+          <Link href="/community">ชุมชน</Link>
           <Link href="/venues">สนามแข่ง</Link>
           <Link href="/sponsors">สปอนเซอร์</Link>
         </nav>

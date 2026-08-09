@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { getSupabaseAdmin } from "@/lib/supabase";
+import { getCurrentUser } from "@/lib/supabase/server";
 
 function num(v: FormDataEntryValue | null): number {
   const n = Number(String(v ?? "").replace(/[^0-9.]/g, ""));
@@ -14,7 +15,28 @@ function str(v: FormDataEntryValue | null): string | null {
   return s.length ? s : null;
 }
 
+/** อัปโหลดไฟล์โปสเตอร์ขึ้น Supabase Storage แล้วคืน public URL */
+async function uploadPoster(
+  sb: NonNullable<ReturnType<typeof getSupabaseAdmin>>,
+  file: File | null,
+  slug: string
+): Promise<string | null> {
+  if (!file || file.size === 0) return null;
+  const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
+  const path = `${slug}-${Date.now()}.${ext}`;
+  const { error } = await sb.storage.from("posters").upload(path, file, {
+    contentType: file.type || "image/jpeg",
+    upsert: true,
+  });
+  if (error) return null;
+  return sb.storage.from("posters").getPublicUrl(path).data.publicUrl;
+}
+
 export async function createTournament(formData: FormData) {
+  // ต้องล็อกอินก่อนเท่านั้น (ป้องกันการเรียก action ตรงๆ)
+  const user = await getCurrentUser();
+  if (!user) redirect("/login?next=/admin/tournaments/new");
+
   const sb = getSupabaseAdmin();
   if (!sb) {
     // ยังไม่ได้ตั้งค่า Supabase — กลับไปหน้าเดิมพร้อมแจ้งเตือน
@@ -25,6 +47,11 @@ export async function createTournament(formData: FormData) {
   const slug =
     str(formData.get("slug")) ||
     name.toLowerCase().replace(/\s+/g, "-").replace(/[^\w-ก-๙]/g, "");
+
+  // อัปโหลดโปสเตอร์ (ถ้ามี) — ใช้เป็นรูปหลัก มิฉะนั้นใช้ลิงก์รูปที่วางมา
+  const posterFile = formData.get("poster_file") as File | null;
+  const uploadedUrl = await uploadPoster(sb!, posterFile, slug);
+  const imageUrl = uploadedUrl || str(formData.get("image_url"));
 
   // เพิ่มสนามใหม่ถ้ามีการกรอกชื่อสนาม
   let venueId: string | null = null;
@@ -59,7 +86,8 @@ export async function createTournament(formData: FormData) {
     match_start: str(formData.get("match_start")),
     match_end: str(formData.get("match_end")),
     status: str(formData.get("status")) || "registering",
-    image_url: str(formData.get("image_url")),
+    image_url: imageUrl,
+    poster_url: uploadedUrl,
     live_url: str(formData.get("live_url")),
     description: str(formData.get("description")),
     organizer_name: str(formData.get("organizer_name")),
@@ -75,4 +103,31 @@ export async function createTournament(formData: FormData) {
   revalidatePath("/");
   revalidatePath("/admin");
   redirect("/admin?created=1");
+}
+
+export async function deleteThread(formData: FormData) {
+  const user = await getCurrentUser();
+  if (!user) redirect("/login?next=/admin/community");
+  const sb = getSupabaseAdmin();
+  const id = str(formData.get("id"));
+  if (sb && id) {
+    await sb.from("threads").delete().eq("id", id);
+    revalidatePath("/admin/community");
+    revalidatePath("/community");
+  }
+  redirect("/admin/community");
+}
+
+export async function togglePinThread(formData: FormData) {
+  const user = await getCurrentUser();
+  if (!user) redirect("/login?next=/admin/community");
+  const sb = getSupabaseAdmin();
+  const id = str(formData.get("id"));
+  const pinned = str(formData.get("pinned")) === "true";
+  if (sb && id) {
+    await sb.from("threads").update({ pinned: !pinned }).eq("id", id);
+    revalidatePath("/admin/community");
+    revalidatePath("/community");
+  }
+  redirect("/admin/community");
 }

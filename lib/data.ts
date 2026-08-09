@@ -43,6 +43,18 @@ export async function getTournamentBySlug(slug: string): Promise<Tournament | nu
   return data as unknown as Tournament;
 }
 
+export async function getTournamentById(id: string): Promise<Tournament | null> {
+  const sb = getSupabase();
+  if (!sb) return seedTournaments.find((t) => t.id === id) ?? null;
+  const { data, error } = await sb
+    .from("tournaments")
+    .select(TOURNAMENT_SELECT)
+    .eq("id", id)
+    .maybeSingle();
+  if (error || !data) return null;
+  return data as unknown as Tournament;
+}
+
 export async function getLiveTournaments(): Promise<Tournament[]> {
   const all = await getTournaments();
   return all.filter((t) => t.status === "live" && t.live_url);

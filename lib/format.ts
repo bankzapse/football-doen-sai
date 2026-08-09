@@ -58,3 +58,18 @@ export const FORMAT_LABEL: Record<string, string> = {
   "9": "9 คน",
   "11": "11 คน",
 };
+
+/** "x นาที/ชั่วโมง/วันที่แล้ว" แบบไทย */
+export function timeAgo(iso: string): string {
+  const then = new Date(iso).getTime();
+  if (isNaN(then)) return "";
+  const diff = Math.max(0, Date.now() - then);
+  const m = Math.floor(diff / 60000);
+  if (m < 1) return "เมื่อสักครู่";
+  if (m < 60) return `${m} นาทีที่แล้ว`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h} ชม.ที่แล้ว`;
+  const d = Math.floor(h / 24);
+  if (d < 30) return `${d} วันที่แล้ว`;
+  return formatThaiDate(iso);
+}

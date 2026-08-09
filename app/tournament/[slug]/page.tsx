@@ -4,10 +4,12 @@ import { notFound } from "next/navigation";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { getTournamentBySlug, getTournaments } from "@/lib/data";
+import { getThreadsForTournament, CATEGORY_LABEL, type ThreadCategory } from "@/lib/community";
 import {
   formatBaht,
   formatThaiDate,
   formatThaiDateRange,
+  timeAgo,
   STATUS_META,
   FORMAT_LABEL,
 } from "@/lib/format";
@@ -66,6 +68,7 @@ export default async function TournamentPage({
   const status = STATUS_META[t.status];
   const cover = t.image_url || FALLBACK_IMG;
   const embed = t.live_url ? toYouTubeEmbed(t.live_url) : null;
+  const threads = await getThreadsForTournament(t.id);
 
   const prizeRows = [
     { label: "ชนะเลิศ", value: t.prize_champion },
@@ -244,6 +247,39 @@ export default async function TournamentPage({
             </div>
           </aside>
         </div>
+
+        {/* กระทู้พูดคุย/หาคู่แข่ง เกี่ยวกับรายการนี้ */}
+        <section style={{ paddingBottom: 20 }}>
+          <div className="section-title">
+            <h2>พูดคุย · หาทีม · หาคู่แข่ง เกี่ยวกับรายการนี้</h2>
+            <Link href={`/community/new?tournament=${t.id}`} className="btn gold" style={{ marginLeft: "auto" }}>
+              + ตั้งกระทู้
+            </Link>
+          </div>
+          {threads.length === 0 ? (
+            <p className="muted">ยังไม่มีกระทู้เกี่ยวกับรายการนี้ — เริ่มพูดคุยเป็นคนแรก</p>
+          ) : (
+            <div className="thread-list">
+              {threads.map((th) => (
+                <Link key={th.id} href={`/community/${th.id}`} className="thread-row">
+                  <div className="thread-main">
+                    <div className="thread-cat">
+                      <span className="cat-tag">{CATEGORY_LABEL[th.category as ThreadCategory]}</span>
+                    </div>
+                    <div className="thread-title">{th.title}</div>
+                    <div className="thread-meta muted">
+                      โดย {th.author_name} · {timeAgo(th.created_at)}
+                    </div>
+                  </div>
+                  <div className="thread-replies">
+                    <b className="tnum">{th.reply_count}</b>
+                    <span>ตอบ</span>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
+        </section>
 
         <p style={{ paddingBottom: 40 }}>
           <Link href="/" className="btn ghost">

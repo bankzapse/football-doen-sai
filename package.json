@@ -7,9 +7,11 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "db:check": "node --env-file=.env.local scripts/check-supabase.mjs"
+    "db:check": "node --env-file=.env.local scripts/check-supabase.mjs",
+    "db:seed": "node --env-file=.env.local scripts/seed-supabase.mjs"
   },
   "dependencies": {
+    "@supabase/ssr": "^0.12.4",
     "@supabase/supabase-js": "^2.48.1",
     "next": "^16.3.0",
     "react": "19.0.0",
