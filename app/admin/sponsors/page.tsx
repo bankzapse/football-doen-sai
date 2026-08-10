@@ -129,8 +129,14 @@ export default async function AdminSponsorsPage({
             </select>
           </div>
           <div className="field">
-            <label>ลิงก์โลโก้</label>
+            <label>อัปโหลดโลโก้จากเครื่อง</label>
+            <input name="logo_file" type="file" accept="image/*" />
+            <span className="hint">เลือกไฟล์รูปได้เลย (เก็บใน Supabase Storage)</span>
+          </div>
+          <div className="field">
+            <label>หรือใส่ลิงก์โลโก้</label>
             <input name="logo_url" placeholder="https://..." />
+            <span className="hint">ถ้าอัปโหลดไฟล์ด้านบนแล้ว ช่องนี้จะถูกข้าม</span>
           </div>
           <div className="field">
             <label>เว็บไซต์</label>

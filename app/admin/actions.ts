@@ -15,15 +15,15 @@ function str(v: FormDataEntryValue | null): string | null {
   return s.length ? s : null;
 }
 
-/** อัปโหลดไฟล์โปสเตอร์ขึ้น Supabase Storage แล้วคืน public URL */
-async function uploadPoster(
+/** อัปโหลดไฟล์รูปขึ้น Supabase Storage (bucket posters) แล้วคืน public URL */
+async function uploadImage(
   sb: NonNullable<ReturnType<typeof getSupabaseAdmin>>,
   file: File | null,
-  slug: string
+  prefix: string
 ): Promise<string | null> {
   if (!file || file.size === 0) return null;
   const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
-  const path = `${slug}-${Date.now()}.${ext}`;
+  const path = `${prefix}-${Date.now()}.${ext}`;
   const { error } = await sb.storage.from("posters").upload(path, file, {
     contentType: file.type || "image/jpeg",
     upsert: true,
@@ -50,7 +50,7 @@ export async function createTournament(formData: FormData) {
 
   // อัปโหลดโปสเตอร์ (ถ้ามี) — ใช้เป็นรูปหลัก มิฉะนั้นใช้ลิงก์รูปที่วางมา
   const posterFile = formData.get("poster_file") as File | null;
-  const uploadedUrl = await uploadPoster(sb!, posterFile, slug);
+  const uploadedUrl = await uploadImage(sb!, posterFile, slug);
   const imageUrl = uploadedUrl || str(formData.get("image_url"));
 
   // เพิ่มสนามใหม่ถ้ามีการกรอกชื่อสนาม
@@ -292,7 +292,7 @@ export async function updateTournament(formData: FormData) {
 
   const slug = str(formData.get("slug"));
   const posterFile = formData.get("poster_file") as File | null;
-  const uploadedUrl = await uploadPoster(sb!, posterFile, slug || id);
+  const uploadedUrl = await uploadImage(sb!, posterFile, slug || id);
   const newImage = uploadedUrl || str(formData.get("image_url"));
 
   const patch: Record<string, unknown> = {
@@ -347,13 +347,13 @@ export async function deleteTournament(formData: FormData) {
 }
 
 // ---------- สนามแข่ง (venues) ----------
-function venuePayload(formData: FormData) {
+function venuePayload(formData: FormData, imageUrl: string | null) {
   return {
     name: str(formData.get("name")) || "สนามใหม่",
     province: str(formData.get("province")) || "-",
     district: str(formData.get("district")),
     size: str(formData.get("size")),
-    image_url: str(formData.get("image_url")),
+    image_url: imageUrl,
     map_url: str(formData.get("map_url")),
   };
 }
@@ -362,7 +362,10 @@ export async function createVenue(formData: FormData) {
   await requireUser("/admin/venues");
   const sb = getSupabaseAdmin();
   if (!sb) redirect("/admin/venues?error=nodb");
-  const { error } = await sb!.from("venues").insert(venuePayload(formData));
+  // อัปโหลดรูปจากเครื่อง (ถ้ามี) ไม่งั้นใช้ลิงก์ที่วางมา
+  const uploaded = await uploadImage(sb!, formData.get("image_file") as File | null, "venue");
+  const imageUrl = uploaded || str(formData.get("image_url"));
+  const { error } = await sb!.from("venues").insert(venuePayload(formData, imageUrl));
   if (error) redirect(`/admin/venues?error=${encodeURIComponent(error.message)}`);
   revalidatePath("/admin/venues");
   revalidatePath("/venues");
@@ -374,7 +377,10 @@ export async function updateVenue(formData: FormData) {
   const sb = getSupabaseAdmin();
   const id = str(formData.get("id"));
   if (!sb || !id) redirect("/admin/venues");
-  const { error } = await sb!.from("venues").update(venuePayload(formData)).eq("id", id);
+  // ถ้าอัปโหลดรูปใหม่ให้ใช้รูปนั้น ไม่งั้นใช้ค่าลิงก์เดิม/ที่แก้ในช่อง
+  const uploaded = await uploadImage(sb!, formData.get("image_file") as File | null, "venue");
+  const imageUrl = uploaded || str(formData.get("image_url"));
+  const { error } = await sb!.from("venues").update(venuePayload(formData, imageUrl)).eq("id", id);
   if (error) redirect(`/admin/venues/${id}?error=${encodeURIComponent(error.message)}`);
   revalidatePath("/admin/venues");
   revalidatePath("/venues");
@@ -397,11 +403,11 @@ export async function deleteVenue(formData: FormData) {
 // ---------- สปอนเซอร์ (sponsors) ----------
 const SPONSOR_TIERS = ["platinum", "gold", "standard"];
 
-function sponsorPayload(formData: FormData) {
+function sponsorPayload(formData: FormData, logoUrl: string | null) {
   const tier = str(formData.get("tier")) || "standard";
   return {
     name: str(formData.get("name")) || "สปอนเซอร์ใหม่",
-    logo_url: str(formData.get("logo_url")),
+    logo_url: logoUrl,
     tier: SPONSOR_TIERS.includes(tier) ? tier : "standard",
     website: str(formData.get("website")),
     active: str(formData.get("active")) !== "false",
@@ -412,7 +418,10 @@ export async function createSponsor(formData: FormData) {
   await requireUser("/admin/sponsors");
   const sb = getSupabaseAdmin();
   if (!sb) redirect("/admin/sponsors?error=nodb");
-  const { error } = await sb!.from("sponsors").insert(sponsorPayload(formData));
+  // อัปโหลดโลโก้จากเครื่อง (ถ้ามี) ไม่งั้นใช้ลิงก์ที่วางมา
+  const uploaded = await uploadImage(sb!, formData.get("logo_file") as File | null, "sponsor");
+  const logoUrl = uploaded || str(formData.get("logo_url"));
+  const { error } = await sb!.from("sponsors").insert(sponsorPayload(formData, logoUrl));
   if (error) redirect(`/admin/sponsors?error=${encodeURIComponent(error.message)}`);
   revalidatePath("/admin/sponsors");
   revalidatePath("/sponsors");
@@ -424,7 +433,10 @@ export async function updateSponsor(formData: FormData) {
   const sb = getSupabaseAdmin();
   const id = str(formData.get("id"));
   if (!sb || !id) redirect("/admin/sponsors");
-  const { error } = await sb!.from("sponsors").update(sponsorPayload(formData)).eq("id", id);
+  // ถ้าอัปโหลดโลโก้ใหม่ให้ใช้รูปนั้น ไม่งั้นใช้ค่าลิงก์เดิม/ที่แก้ในช่อง
+  const uploaded = await uploadImage(sb!, formData.get("logo_file") as File | null, "sponsor");
+  const logoUrl = uploaded || str(formData.get("logo_url"));
+  const { error } = await sb!.from("sponsors").update(sponsorPayload(formData, logoUrl)).eq("id", id);
   if (error) redirect(`/admin/sponsors/${id}?error=${encodeURIComponent(error.message)}`);
   revalidatePath("/admin/sponsors");
   revalidatePath("/sponsors");

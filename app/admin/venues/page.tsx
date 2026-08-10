@@ -103,8 +103,14 @@ export default async function AdminVenuesPage({
             <input name="size" placeholder="70×50 เมตร (หญ้าจริง)" />
           </div>
           <div className="field">
-            <label>ลิงก์รูปภาพ</label>
+            <label>อัปโหลดรูปสนามจากเครื่อง</label>
+            <input name="image_file" type="file" accept="image/*" />
+            <span className="hint">เลือกไฟล์รูปได้เลย (เก็บใน Supabase Storage)</span>
+          </div>
+          <div className="field">
+            <label>หรือใส่ลิงก์รูปภาพ</label>
             <input name="image_url" placeholder="https://..." />
+            <span className="hint">ถ้าอัปโหลดไฟล์ด้านบนแล้ว ช่องนี้จะถูกข้าม</span>
           </div>
           <div className="field">
             <label>ลิงก์แผนที่ (Google Maps)</label>

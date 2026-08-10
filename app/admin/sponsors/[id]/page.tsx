@@ -42,8 +42,21 @@ export default async function EditSponsorPage({
             </select>
           </div>
           <div className="field">
-            <label>ลิงก์โลโก้</label>
+            <label>อัปโหลดโลโก้ใหม่จากเครื่อง</label>
+            <input name="logo_file" type="file" accept="image/*" />
+            <span className="hint">อัปโหลดเพื่อเปลี่ยนโลโก้ ถ้าไม่เลือกจะใช้ลิงก์เดิม</span>
+          </div>
+          <div className="field">
+            <label>หรือใส่ลิงก์โลโก้</label>
             <input name="logo_url" defaultValue={s.logo_url ?? ""} placeholder="https://..." />
+            {s.logo_url ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={s.logo_url}
+                alt={s.name}
+                style={{ marginTop: 8, maxHeight: 56, width: "auto", borderRadius: 6 }}
+              />
+            ) : null}
           </div>
           <div className="field">
             <label>เว็บไซต์</label>

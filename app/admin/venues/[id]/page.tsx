@@ -46,8 +46,21 @@ export default async function EditVenuePage({
             <input name="size" defaultValue={v.size ?? ""} />
           </div>
           <div className="field">
-            <label>ลิงก์รูปภาพ</label>
+            <label>อัปโหลดรูปสนามใหม่จากเครื่อง</label>
+            <input name="image_file" type="file" accept="image/*" />
+            <span className="hint">อัปโหลดเพื่อเปลี่ยนรูป ถ้าไม่เลือกจะใช้ลิงก์เดิม</span>
+          </div>
+          <div className="field">
+            <label>หรือใส่ลิงก์รูปภาพ</label>
             <input name="image_url" defaultValue={v.image_url ?? ""} placeholder="https://..." />
+            {v.image_url ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={v.image_url}
+                alt={v.name}
+                style={{ marginTop: 8, maxHeight: 120, width: "auto", borderRadius: 8 }}
+              />
+            ) : null}
           </div>
           <div className="field">
             <label>ลิงก์แผนที่ (Google Maps)</label>
