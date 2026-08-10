@@ -1849,3 +1849,10 @@ table.data a:hover {
   font-size: 12px;
   padding: 7px 9px;
 }
+
+/* ---------- community feed (หน้าแรก) ---------- */
+.community-feed {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+  gap: 10px;
+}

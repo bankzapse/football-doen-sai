@@ -72,6 +72,37 @@ export async function getThreadsAdmin(): Promise<Thread[]> {
   return rows.sort((a, b) => Number(a.status === "pending" ? 0 : 1) - Number(b.status === "pending" ? 0 : 1));
 }
 
+/** กระทู้ที่มีความเคลื่อนไหวล่าสุด (ตอบล่าสุด หรือ สร้างล่าสุด) — สำหรับหน้าแรก */
+export async function getRecentActiveThreads(limit = 6): Promise<Thread[]> {
+  const sb = getSupabase();
+  if (!sb) return [];
+  const { data } = await sb
+    .from("threads")
+    .select("*")
+    .order("created_at", { ascending: false })
+    .limit(40);
+  const list = ((data as Thread[]) ?? []).filter(isPublic);
+  if (!list.length) return [];
+
+  // หาเวลาตอบล่าสุดของแต่ละกระทู้
+  const { data: replies } = await sb
+    .from("replies")
+    .select("thread_id, created_at")
+    .order("created_at", { ascending: false })
+    .limit(200);
+  const lastReply = new Map<string, string>();
+  for (const r of (replies ?? []) as Array<{ thread_id: string; created_at: string }>) {
+    if (!lastReply.has(r.thread_id)) lastReply.set(r.thread_id, r.created_at);
+  }
+  const activityAt = (t: Thread) => {
+    const lr = lastReply.get(t.id);
+    return lr && lr > t.created_at ? lr : t.created_at;
+  };
+  return list
+    .sort((a, b) => activityAt(b).localeCompare(activityAt(a)))
+    .slice(0, limit);
+}
+
 export async function getThread(id: string): Promise<Thread | null> {
   const sb = getSupabase();
   if (!sb) return null;

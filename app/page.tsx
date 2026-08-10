@@ -4,9 +4,11 @@ import Footer from "@/components/Footer";
 import TournamentBrowser from "@/components/TournamentBrowser";
 import { getTournaments, getSponsors } from "@/lib/data";
 import { getTournamentViews } from "@/lib/stats";
+import { getRecentActiveThreads, CATEGORY_LABEL, type ThreadCategory } from "@/lib/community";
 import {
   formatBaht,
   formatThaiDateRange,
+  timeAgo,
   STATUS_META,
   FORMAT_LABEL,
 } from "@/lib/format";
@@ -16,10 +18,11 @@ const TH_MONTHS = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.�
 export const revalidate = 60; // อัปเดตข้อมูล/ยอดวิวอัตโนมัติทุก 60 วินาที
 
 export default async function HomePage() {
-  const [tournaments, sponsors, viewsMap] = await Promise.all([
+  const [tournaments, sponsors, viewsMap, recentThreads] = await Promise.all([
     getTournaments(),
     getSponsors(),
     getTournamentViews(),
+    getRecentActiveThreads(6),
   ]);
   const viewsBySlug = Object.fromEntries(viewsMap);
 
@@ -151,6 +154,38 @@ export default async function HomePage() {
               </a>
             </div>
           </section>
+
+          {/* คุยกันในชุมชน — กระทู้ที่มีความเคลื่อนไหวล่าสุด */}
+          {recentThreads.length > 0 ? (
+            <section style={{ margin: "44px 0" }}>
+              <div className="section-title">
+                <h2>คุยกันในชุมชน</h2>
+                <Link href="/community" style={{ marginLeft: "auto", fontSize: 14 }} className="muted">
+                  ดูทั้งหมด →
+                </Link>
+              </div>
+              <div className="community-feed">
+                {recentThreads.map((t) => (
+                  <Link key={t.id} href={`/community/${t.id}`} className="thread-row">
+                    <div className="thread-main">
+                      <div className="thread-cat">
+                        <span className="cat-tag">{CATEGORY_LABEL[t.category as ThreadCategory]}</span>
+                        {t.province ? <span className="muted"> · {t.province}</span> : null}
+                      </div>
+                      <div className="thread-title">{t.title}</div>
+                      <div className="thread-meta muted">
+                        โดย {t.author_name} · {timeAgo(t.created_at)}
+                      </div>
+                    </div>
+                    <div className="thread-replies">
+                      <b className="tnum">{t.reply_count}</b>
+                      <span>ตอบ</span>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </section>
+          ) : null}
 
           {/* SEO schedule table */}
           <section className="seo">
