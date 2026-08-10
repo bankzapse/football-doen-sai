@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { createTeam } from "@/app/admin/actions";
+import ProvinceSelect from "@/components/ProvinceSelect";
 
 type Row = { key: number };
 
@@ -26,7 +27,7 @@ export default function TeamForm() {
         </div>
         <div className="field">
           <label>จังหวัด</label>
-          <input name="province" placeholder="กรุงเทพมหานคร" />
+          <ProvinceSelect />
         </div>
         <div className="field">
           <label>ผู้จัดการทีม</label>

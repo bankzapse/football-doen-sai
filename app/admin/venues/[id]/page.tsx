@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import ProvinceSelect from "@/components/ProvinceSelect";
 import { getVenueById } from "@/lib/data";
 import { updateVenue } from "@/app/admin/actions";
 
@@ -35,7 +36,7 @@ export default async function EditVenuePage({
           </div>
           <div className="field">
             <label>จังหวัด *</label>
-            <input name="province" required defaultValue={v.province} />
+            <ProvinceSelect required defaultValue={v.province} />
           </div>
           <div className="field">
             <label>อำเภอ</label>

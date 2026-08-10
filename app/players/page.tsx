@@ -9,6 +9,7 @@ import {
   POSITION_LABEL,
   FOOT_LABEL,
 } from "@/lib/players";
+import PlayerProvinceFilter from "@/components/PlayerProvinceFilter";
 
 export const metadata: Metadata = {
   title: "หานักเตะเดินสาย",
@@ -71,29 +72,10 @@ export default async function PlayersPage({
           })}
         </div>
 
-        {/* ฟิลเตอร์จังหวัด */}
+        {/* ฟิลเตอร์จังหวัด (dropdown) */}
         {provinces.length > 0 ? (
-          <div className="chip-row" style={{ marginTop: 8 }}>
-            <Link
-              href={pos ? `/players?pos=${pos}` : "/players"}
-              className={`chip sm ${!province ? "on" : ""}`}
-            >
-              ทุกจังหวัด
-            </Link>
-            {provinces.map((pv) => {
-              const q = new URLSearchParams();
-              if (pos) q.set("pos", pos);
-              q.set("province", pv);
-              return (
-                <Link
-                  key={pv}
-                  href={`/players?${q.toString()}`}
-                  className={`chip sm ${province === pv ? "on" : ""}`}
-                >
-                  {pv}
-                </Link>
-              );
-            })}
+          <div style={{ marginTop: 10 }}>
+            <PlayerProvinceFilter provinces={provinces} />
           </div>
         ) : null}
 

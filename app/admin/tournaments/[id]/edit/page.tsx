@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import ProvinceSelect from "@/components/ProvinceSelect";
 import { getTournamentById, getVenues } from "@/lib/data";
 import { updateTournament, deleteTournament } from "@/app/admin/actions";
 import { isSupabaseConfigured } from "@/lib/supabase";
@@ -61,7 +62,7 @@ export default async function EditTournamentPage({
 
           <div className="field">
             <label>จังหวัด *</label>
-            <input name="province" required defaultValue={t.province} />
+            <ProvinceSelect required defaultValue={t.province} />
           </div>
           <div className="field">
             <label>สถานะ</label>

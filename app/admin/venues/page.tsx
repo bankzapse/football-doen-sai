@@ -1,4 +1,5 @@
 import Link from "next/link";
+import ProvinceSelect from "@/components/ProvinceSelect";
 import { getVenues } from "@/lib/data";
 import { isSupabaseConfigured } from "@/lib/supabase";
 import { createVenue, deleteVenue } from "@/app/admin/actions";
@@ -92,7 +93,7 @@ export default async function AdminVenuesPage({
           </div>
           <div className="field">
             <label>จังหวัด *</label>
-            <input name="province" required placeholder="ชลบุรี" />
+            <ProvinceSelect required />
           </div>
           <div className="field">
             <label>อำเภอ</label>

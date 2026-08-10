@@ -1,4 +1,5 @@
 import Link from "next/link";
+import ProvinceSelect from "@/components/ProvinceSelect";
 import { createTournament } from "@/app/admin/actions";
 import { isSupabaseConfigured } from "@/lib/supabase";
 
@@ -61,7 +62,7 @@ export default async function NewTournamentPage({
 
           <div className="field">
             <label>จังหวัด *</label>
-            <input name="province" required placeholder="ชลบุรี" />
+            <ProvinceSelect required />
           </div>
           <div className="field">
             <label>สถานะ</label>

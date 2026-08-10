@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import ProvinceSelect from "@/components/ProvinceSelect";
 import { submitPlayerAction } from "@/app/players/actions";
 import { POSITIONS } from "@/lib/players";
 
@@ -59,7 +60,7 @@ export default async function JoinPlayerPage({
             </div>
             <div className="field">
               <label>จังหวัด</label>
-              <input name="province" placeholder="ชลบุรี" />
+              <ProvinceSelect />
             </div>
             <div className="field">
               <label>อายุ</label>

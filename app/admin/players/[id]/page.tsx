@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import ProvinceSelect from "@/components/ProvinceSelect";
 import { getPlayerById, POSITIONS } from "@/lib/players";
 import { updatePlayer } from "@/app/admin/actions";
 
@@ -49,7 +50,7 @@ export default async function EditPlayerPage({
           </div>
           <div className="field">
             <label>จังหวัด</label>
-            <input name="province" defaultValue={p.province ?? ""} />
+            <ProvinceSelect defaultValue={p.province} />
           </div>
           <div className="field">
             <label>อายุ</label>

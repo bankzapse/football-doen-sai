@@ -13,7 +13,13 @@ const STATUS_CHIPS: { key: StatusFilter; label: string }[] = [
   { key: "live", label: "แข่งวันนี้" },
 ];
 
-export default function TournamentBrowser({ tournaments }: { tournaments: Tournament[] }) {
+export default function TournamentBrowser({
+  tournaments,
+  viewsBySlug,
+}: {
+  tournaments: Tournament[];
+  viewsBySlug?: Record<string, number>;
+}) {
   const [q, setQ] = useState("");
   const [province, setProvince] = useState("");
   const [format, setFormat] = useState("");
@@ -79,7 +85,7 @@ export default function TournamentBrowser({ tournaments }: { tournaments: Tourna
       ) : (
         <div className="cards">
           {filtered.map((t) => (
-            <TournamentCard key={t.id} t={t} />
+            <TournamentCard key={t.id} t={t} views={viewsBySlug?.[t.slug] ?? 0} />
           ))}
         </div>
       )}

@@ -11,7 +11,7 @@ import {
 const FALLBACK_IMG =
   "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=1200&q=60";
 
-export default function TournamentCard({ t }: { t: Tournament }) {
+export default function TournamentCard({ t, views = 0 }: { t: Tournament; views?: number }) {
   const status = STATUS_META[t.status];
   const cover = t.image_url || FALLBACK_IMG;
   const finished = t.status === "finished";
@@ -27,6 +27,9 @@ export default function TournamentCard({ t }: { t: Tournament }) {
           <span className={`tag ${status.className}`}>{status.label}</span>
           <span className="tag type">{FORMAT_LABEL[t.format]}</span>
         </div>
+        {views > 0 ? (
+          <span className="views-badge tnum">👁 {views.toLocaleString("th-TH")}</span>
+        ) : null}
         <h3>{t.name}</h3>
       </Link>
 

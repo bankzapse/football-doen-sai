@@ -3,6 +3,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import TournamentBrowser from "@/components/TournamentBrowser";
 import { getTournaments, getSponsors } from "@/lib/data";
+import { getTournamentViews } from "@/lib/stats";
 import {
   formatBaht,
   formatThaiDateRange,
@@ -15,7 +16,12 @@ const TH_MONTHS = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.�
 export const revalidate = 300; // อัปเดตข้อมูลอัตโนมัติทุก 5 นาที
 
 export default async function HomePage() {
-  const [tournaments, sponsors] = await Promise.all([getTournaments(), getSponsors()]);
+  const [tournaments, sponsors, viewsMap] = await Promise.all([
+    getTournaments(),
+    getSponsors(),
+    getTournamentViews(),
+  ]);
+  const viewsBySlug = Object.fromEntries(viewsMap);
 
   const live = tournaments.find((t) => t.status === "live" && t.live_url);
   const upcoming = tournaments
@@ -86,7 +92,7 @@ export default async function HomePage() {
         <section className="wrap">
           <div className="grid-2">
             <div>
-              <TournamentBrowser tournaments={tournaments} />
+              <TournamentBrowser tournaments={tournaments} viewsBySlug={viewsBySlug} />
             </div>
 
             <aside>

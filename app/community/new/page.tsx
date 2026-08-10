@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import ProvinceSelect from "@/components/ProvinceSelect";
 import { createThreadAction } from "@/app/community/actions";
 import { CATEGORIES } from "@/lib/community";
 import { getTournaments } from "@/lib/data";
@@ -50,7 +51,7 @@ export default async function NewThreadPage({
             </div>
             <div className="field">
               <label>จังหวัด/โซน</label>
-              <input name="province" placeholder="ชลบุรี" />
+              <ProvinceSelect />
             </div>
 
             <div className="field full">
