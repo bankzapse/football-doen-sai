@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getAllTournamentsAdmin } from "@/lib/data";
 import { isSupabaseConfigured } from "@/lib/supabase";
+import { deleteTournament } from "@/app/admin/actions";
 import {
   formatBaht,
   formatThaiDateRange,
@@ -8,7 +9,19 @@ import {
   FORMAT_LABEL,
 } from "@/lib/format";
 
-export default async function AdminDashboard() {
+const OK_MSG: Record<string, string> = {
+  created: "เพิ่มรายการเรียบร้อยแล้ว",
+  updated: "แก้ไขรายการเรียบร้อยแล้ว",
+  deleted: "ลบรายการเรียบร้อยแล้ว",
+};
+
+export default async function AdminDashboard({
+  searchParams,
+}: {
+  searchParams: Promise<{ created?: string; updated?: string; deleted?: string }>;
+}) {
+  const sp = await searchParams;
+  const okKey = sp.created ? "created" : sp.updated ? "updated" : sp.deleted ? "deleted" : null;
   const tournaments = await getAllTournamentsAdmin();
 
   const openCount = tournaments.filter(
@@ -27,6 +40,8 @@ export default async function AdminDashboard() {
           + เพิ่มรายการใหม่
         </Link>
       </div>
+
+      {okKey ? <div className="notice ok">{OK_MSG[okKey]}</div> : null}
 
       {!isSupabaseConfigured() ? (
         <div className="notice">
@@ -83,12 +98,21 @@ export default async function AdminDashboard() {
                   </span>
                 </td>
                 <td style={{ display: "flex", gap: 6 }}>
-                  <Link href={`/tournament/${t.slug}`} className="rowbtn">
-                    ดูเว็บ
+                  <Link href={`/admin/tournaments/${t.id}/edit`} className="rowbtn">
+                    แก้ไข
                   </Link>
                   <Link href={`/admin/results/${t.id}`} className="rowbtn">
                     ผล
                   </Link>
+                  <Link href={`/tournament/${t.slug}`} className="rowbtn">
+                    ดูเว็บ
+                  </Link>
+                  <form action={deleteTournament}>
+                    <input type="hidden" name="id" value={t.id} />
+                    <button className="rowbtn" style={{ color: "var(--live)" }}>
+                      ลบ
+                    </button>
+                  </form>
                 </td>
               </tr>
             ))}

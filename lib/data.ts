@@ -1,4 +1,4 @@
-import { getSupabase } from "./supabase";
+import { getSupabase, getSupabaseAdmin } from "./supabase";
 import { seedTournaments, seedVenues, seedSponsors } from "./seed";
 import type { Tournament, Venue, Sponsor, Match, Standing } from "./types";
 
@@ -99,10 +99,37 @@ export async function getVenues(): Promise<Venue[]> {
   return data as unknown as Venue[];
 }
 
+export async function getVenueById(id: string): Promise<Venue | null> {
+  const sb = getSupabase();
+  if (!sb) return seedVenues.find((v) => v.id === id) ?? null;
+  const { data } = await sb.from("venues").select("*").eq("id", id).maybeSingle();
+  return (data as Venue) ?? null;
+}
+
 export async function getSponsors(): Promise<Sponsor[]> {
   const sb = getSupabase();
   if (!sb) return seedSponsors.filter((s) => s.active);
   const { data, error } = await sb.from("sponsors").select("*").eq("active", true);
   if (error || !data) return seedSponsors.filter((s) => s.active);
   return data as unknown as Sponsor[];
+}
+
+/** สปอนเซอร์ทั้งหมดสำหรับหลังบ้าน (รวมที่ซ่อนอยู่) — ต้องใช้ service role อ่านตัวที่ active=false */
+export async function getAllSponsorsAdmin(): Promise<Sponsor[]> {
+  const sb = getSupabaseAdmin() ?? getSupabase();
+  if (!sb) return seedSponsors;
+  const { data, error } = await sb
+    .from("sponsors")
+    .select("*")
+    .order("tier", { ascending: true })
+    .order("name", { ascending: true });
+  if (error || !data) return seedSponsors;
+  return data as unknown as Sponsor[];
+}
+
+export async function getSponsorById(id: string): Promise<Sponsor | null> {
+  const sb = getSupabaseAdmin() ?? getSupabase();
+  if (!sb) return seedSponsors.find((s) => s.id === id) ?? null;
+  const { data } = await sb.from("sponsors").select("*").eq("id", id).maybeSingle();
+  return (data as Sponsor) ?? null;
 }

@@ -15,8 +15,26 @@
   --live: #dd3b3b;
   --radius: 14px;
   --shadow: 0 12px 30px -16px rgba(20, 40, 30, 0.16);
-  --sans: system-ui, -apple-system, "Sukhumvit Set", "Noto Sans Thai",
-    "Segoe UI", sans-serif;
+  --sans: var(--font-sans), system-ui, -apple-system, "Sukhumvit Set",
+    "Noto Sans Thai", "Segoe UI", sans-serif;
+  --display: var(--font-display), var(--sans);
+}
+
+/* หัวข้อทั้งหมดใช้ฟอนต์ display (Kanit) ให้ดูสปอร์ต คมขึ้น */
+h1,
+h2,
+h3,
+h4,
+h5,
+.brand,
+.hero h1,
+.detail-hero h1,
+.prize-hero .amt,
+.section-title h2,
+.card-cover h3,
+.card .prize .amt {
+  font-family: var(--display);
+  letter-spacing: -0.01em;
 }
 
 /* ข้อความบนรูปที่มีโอเวอร์เลย์เข้ม — ต้องเป็นสีขาวเสมอไม่ว่าธีมไหน */
@@ -30,7 +48,11 @@
   color: rgba(255, 255, 255, 0.85);
 }
 .detail-hero .prize-hero .amt {
-  color: #f4c247;
+  background: linear-gradient(180deg, #ffe9ad 0%, #f4c247 55%, #dd9e28 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.35));
 }
 .detail-hero .prize-hero .cur {
   color: rgba(255, 255, 255, 0.8);
@@ -47,7 +69,8 @@ body {
   background: var(--bg);
   color: var(--text);
   font-family: var(--sans);
-  line-height: 1.55;
+  font-weight: 400;
+  line-height: 1.62;
   -webkit-font-smoothing: antialiased;
 }
 a {
@@ -79,29 +102,49 @@ img {
   border: 1px solid var(--border);
   background: var(--surface-2);
   color: var(--text);
-  padding: 10px 16px;
+  padding: 11px 18px;
   border-radius: 11px;
-  font-family: inherit;
+  font-family: var(--display);
   font-size: 14px;
   font-weight: 700;
+  letter-spacing: 0.01em;
   cursor: pointer;
-  transition: transform 0.08s ease, background 0.15s, border-color 0.15s;
+  transition: transform 0.12s ease, background 0.15s, border-color 0.15s,
+    box-shadow 0.15s, filter 0.15s;
 }
 .btn:hover {
   transform: translateY(-1px);
 }
+.btn:active {
+  transform: translateY(0);
+}
+/* ปุ่มหลัก — ตัวอักษรสีขาวเสมอ + ไล่เฉดสี + เงานุ่ม */
 .btn.gold {
-  background: var(--gold);
-  color: #1a1400;
+  background: linear-gradient(135deg, #c8940c, var(--gold));
+  color: #fff;
   border-color: transparent;
+  box-shadow: 0 8px 18px -10px rgba(169, 123, 9, 0.85);
+}
+.btn.gold:hover {
+  filter: brightness(1.06);
+  box-shadow: 0 10px 22px -10px rgba(169, 123, 9, 0.95);
 }
 .btn.green {
-  background: var(--pitch);
-  color: #04140a;
+  background: linear-gradient(135deg, var(--pitch), var(--pitch-dim));
+  color: #fff;
   border-color: transparent;
+  box-shadow: 0 8px 18px -10px rgba(18, 161, 63, 0.8);
+}
+.btn.green:hover {
+  filter: brightness(1.06);
+  box-shadow: 0 10px 22px -10px rgba(18, 161, 63, 0.9);
 }
 .btn.ghost {
   background: transparent;
+}
+.btn.ghost:hover {
+  border-color: color-mix(in srgb, var(--pitch) 45%, var(--border));
+  background: var(--surface-2);
 }
 .btn.block {
   width: 100%;
@@ -664,7 +707,7 @@ table.data a:hover {
 /* ---------- detail page (SEO) ---------- */
 .detail-hero {
   position: relative;
-  min-height: 420px;
+  min-height: 470px;
   display: flex;
   align-items: flex-end;
   background-size: cover;
@@ -675,47 +718,62 @@ table.data a:hover {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    180deg,
-    rgba(9, 13, 11, 0.45) 0%,
-    rgba(9, 13, 11, 0.78) 65%,
-    rgba(9, 13, 11, 0.9) 100%
-  );
+  background:
+    linear-gradient(
+      180deg,
+      rgba(9, 13, 11, 0.2) 0%,
+      rgba(9, 13, 11, 0.6) 58%,
+      rgba(9, 13, 11, 0.93) 100%
+    ),
+    radial-gradient(
+      130% 80% at 12% 100%,
+      color-mix(in srgb, var(--pitch) 34%, transparent),
+      transparent 62%
+    );
 }
 .detail-hero .inner {
   position: relative;
   z-index: 2;
-  padding: 40px 0 30px;
+  padding: 48px 0 34px;
 }
 .detail-hero .badges {
   display: flex;
   gap: 8px;
-  margin-bottom: 14px;
+  margin-bottom: 16px;
   flex-wrap: wrap;
 }
+.detail-hero .badges .tag {
+  font-size: 12px;
+  padding: 5px 11px;
+  border-radius: 8px;
+  backdrop-filter: blur(4px);
+  box-shadow: 0 4px 14px -6px rgba(0, 0, 0, 0.5);
+}
 .detail-hero h1 {
-  font-size: clamp(28px, 5vw, 46px);
+  font-size: clamp(30px, 5.2vw, 50px);
   font-weight: 900;
-  margin: 0 0 12px;
+  line-height: 1.1;
+  margin: 0 0 14px;
   max-width: 20ch;
   text-wrap: balance;
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.4);
 }
 .detail-hero .where {
-  color: var(--muted);
+  color: rgba(255, 255, 255, 0.9);
   font-size: 15px;
   font-weight: 600;
 }
 .prize-hero {
   display: flex;
   align-items: baseline;
-  gap: 10px;
-  margin: 18px 0 4px;
+  gap: 12px;
+  margin: 22px 0 4px;
 }
 .prize-hero .amt {
-  font-size: clamp(40px, 9vw, 72px);
+  font-size: clamp(44px, 9vw, 78px);
   font-weight: 900;
   color: var(--gold);
-  line-height: 0.95;
+  line-height: 0.92;
 }
 .prize-hero .cur {
   color: var(--muted);
@@ -745,10 +803,28 @@ table.data a:hover {
   }
 }
 .info {
+  position: relative;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 12px;
-  padding: 15px 16px;
+  padding: 15px 16px 15px 18px;
+  overflow: hidden;
+  transition: transform 0.1s ease, border-color 0.15s, box-shadow 0.15s;
+}
+.info::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: linear-gradient(180deg, var(--pitch), var(--pitch-dim));
+  opacity: 0.55;
+}
+.info:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--pitch) 40%, var(--border));
+  box-shadow: var(--shadow);
 }
 .info .k {
   font-size: 11px;
@@ -760,17 +836,30 @@ table.data a:hover {
 .info .v {
   font-size: 18px;
   font-weight: 800;
+  font-family: var(--display);
 }
 .info .v.gold {
   color: var(--gold);
 }
 .prose {
-  margin-top: 24px;
+  margin-top: 28px;
   color: var(--text);
 }
 .prose h2 {
-  font-size: 18px;
-  margin: 0 0 8px;
+  font-size: 20px;
+  margin: 0 0 10px;
+  position: relative;
+  padding-left: 13px;
+}
+.prose h2::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.15em;
+  bottom: 0.15em;
+  width: 4px;
+  border-radius: 3px;
+  background: linear-gradient(180deg, var(--pitch), var(--pitch-dim));
 }
 .prose p {
   color: var(--muted);
@@ -797,16 +886,24 @@ table.data a:hover {
   font-weight: 800;
 }
 .sidecard {
-  background: var(--surface);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--pitch) 7%, var(--surface)),
+    var(--surface) 40%
+  );
   border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 18px;
+  border-radius: 14px;
+  padding: 20px;
   position: sticky;
   top: 84px;
+  box-shadow: var(--shadow);
 }
 .sidecard h3 {
   margin: 0 0 4px;
-  font-size: 16px;
+  font-size: 17px;
+}
+.sidecard .btn.block {
+  margin-top: 14px;
 }
 .sidecard .contact {
   font-size: 14px;

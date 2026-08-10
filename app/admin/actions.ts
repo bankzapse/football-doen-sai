@@ -282,3 +282,176 @@ export async function togglePinThread(formData: FormData) {
   }
   redirect("/admin/community");
 }
+
+// ---------- แก้ไข / ลบ รายการแข่งขัน ----------
+export async function updateTournament(formData: FormData) {
+  await requireUser("/admin");
+  const sb = getSupabaseAdmin();
+  const id = str(formData.get("id"));
+  if (!sb || !id) redirect("/admin");
+
+  const slug = str(formData.get("slug"));
+  const posterFile = formData.get("poster_file") as File | null;
+  const uploadedUrl = await uploadPoster(sb!, posterFile, slug || id);
+  const newImage = uploadedUrl || str(formData.get("image_url"));
+
+  const patch: Record<string, unknown> = {
+    name: str(formData.get("name")) || "รายการ",
+    format: str(formData.get("format")) || "7",
+    province: str(formData.get("province")) || "-",
+    team_limit: num(formData.get("team_limit")),
+    entry_fee: num(formData.get("entry_fee")),
+    deposit: num(formData.get("deposit")),
+    prize_total: num(formData.get("prize_total")),
+    prize_champion: num(formData.get("prize_champion")),
+    prize_runnerup: numOrNull(formData.get("prize_runnerup")),
+    prize_third: numOrNull(formData.get("prize_third")),
+    reg_close: str(formData.get("reg_close")),
+    match_start: str(formData.get("match_start")),
+    match_end: str(formData.get("match_end")),
+    status: str(formData.get("status")) || "registering",
+    live_url: str(formData.get("live_url")),
+    description: str(formData.get("description")),
+    organizer_name: str(formData.get("organizer_name")),
+    organizer_phone: str(formData.get("organizer_phone")),
+    organizer_line: str(formData.get("organizer_line")),
+    venue_id: str(formData.get("venue_id")),
+    updated_at: new Date().toISOString(),
+  };
+  if (slug) patch.slug = slug;
+  if (newImage) patch.image_url = newImage;
+  if (uploadedUrl) patch.poster_url = uploadedUrl;
+
+  const { error } = await sb!.from("tournaments").update(patch).eq("id", id);
+  if (error) {
+    redirect(`/admin/tournaments/${id}/edit?error=${encodeURIComponent(error.message)}`);
+  }
+
+  revalidatePath("/");
+  revalidatePath("/admin");
+  if (slug) revalidatePath(`/tournament/${slug}`);
+  redirect("/admin?updated=1");
+}
+
+export async function deleteTournament(formData: FormData) {
+  await requireUser("/admin");
+  const sb = getSupabaseAdmin();
+  const id = str(formData.get("id"));
+  if (sb && id) {
+    // matches / standings ผูกด้วย on delete cascade — ลบตามอัตโนมัติ
+    await sb.from("tournaments").delete().eq("id", id);
+    revalidatePath("/");
+    revalidatePath("/admin");
+  }
+  redirect("/admin?deleted=1");
+}
+
+// ---------- สนามแข่ง (venues) ----------
+function venuePayload(formData: FormData) {
+  return {
+    name: str(formData.get("name")) || "สนามใหม่",
+    province: str(formData.get("province")) || "-",
+    district: str(formData.get("district")),
+    size: str(formData.get("size")),
+    image_url: str(formData.get("image_url")),
+    map_url: str(formData.get("map_url")),
+  };
+}
+
+export async function createVenue(formData: FormData) {
+  await requireUser("/admin/venues");
+  const sb = getSupabaseAdmin();
+  if (!sb) redirect("/admin/venues?error=nodb");
+  const { error } = await sb!.from("venues").insert(venuePayload(formData));
+  if (error) redirect(`/admin/venues?error=${encodeURIComponent(error.message)}`);
+  revalidatePath("/admin/venues");
+  revalidatePath("/venues");
+  redirect("/admin/venues?ok=created");
+}
+
+export async function updateVenue(formData: FormData) {
+  await requireUser("/admin/venues");
+  const sb = getSupabaseAdmin();
+  const id = str(formData.get("id"));
+  if (!sb || !id) redirect("/admin/venues");
+  const { error } = await sb!.from("venues").update(venuePayload(formData)).eq("id", id);
+  if (error) redirect(`/admin/venues/${id}?error=${encodeURIComponent(error.message)}`);
+  revalidatePath("/admin/venues");
+  revalidatePath("/venues");
+  redirect("/admin/venues?ok=updated");
+}
+
+export async function deleteVenue(formData: FormData) {
+  await requireUser("/admin/venues");
+  const sb = getSupabaseAdmin();
+  const id = str(formData.get("id"));
+  if (sb && id) {
+    // tournaments.venue_id ผูกด้วย on delete set null — ลบสนามได้ปลอดภัย
+    await sb.from("venues").delete().eq("id", id);
+    revalidatePath("/admin/venues");
+    revalidatePath("/venues");
+  }
+  redirect("/admin/venues?ok=deleted");
+}
+
+// ---------- สปอนเซอร์ (sponsors) ----------
+const SPONSOR_TIERS = ["platinum", "gold", "standard"];
+
+function sponsorPayload(formData: FormData) {
+  const tier = str(formData.get("tier")) || "standard";
+  return {
+    name: str(formData.get("name")) || "สปอนเซอร์ใหม่",
+    logo_url: str(formData.get("logo_url")),
+    tier: SPONSOR_TIERS.includes(tier) ? tier : "standard",
+    website: str(formData.get("website")),
+    active: str(formData.get("active")) !== "false",
+  };
+}
+
+export async function createSponsor(formData: FormData) {
+  await requireUser("/admin/sponsors");
+  const sb = getSupabaseAdmin();
+  if (!sb) redirect("/admin/sponsors?error=nodb");
+  const { error } = await sb!.from("sponsors").insert(sponsorPayload(formData));
+  if (error) redirect(`/admin/sponsors?error=${encodeURIComponent(error.message)}`);
+  revalidatePath("/admin/sponsors");
+  revalidatePath("/sponsors");
+  redirect("/admin/sponsors?ok=created");
+}
+
+export async function updateSponsor(formData: FormData) {
+  await requireUser("/admin/sponsors");
+  const sb = getSupabaseAdmin();
+  const id = str(formData.get("id"));
+  if (!sb || !id) redirect("/admin/sponsors");
+  const { error } = await sb!.from("sponsors").update(sponsorPayload(formData)).eq("id", id);
+  if (error) redirect(`/admin/sponsors/${id}?error=${encodeURIComponent(error.message)}`);
+  revalidatePath("/admin/sponsors");
+  revalidatePath("/sponsors");
+  redirect("/admin/sponsors?ok=updated");
+}
+
+export async function toggleSponsor(formData: FormData) {
+  await requireUser("/admin/sponsors");
+  const sb = getSupabaseAdmin();
+  const id = str(formData.get("id"));
+  const active = str(formData.get("active")) === "true";
+  if (sb && id) {
+    await sb.from("sponsors").update({ active: !active }).eq("id", id);
+    revalidatePath("/admin/sponsors");
+    revalidatePath("/sponsors");
+  }
+  redirect("/admin/sponsors");
+}
+
+export async function deleteSponsor(formData: FormData) {
+  await requireUser("/admin/sponsors");
+  const sb = getSupabaseAdmin();
+  const id = str(formData.get("id"));
+  if (sb && id) {
+    await sb.from("sponsors").delete().eq("id", id);
+    revalidatePath("/admin/sponsors");
+    revalidatePath("/sponsors");
+  }
+  redirect("/admin/sponsors?ok=deleted");
+}
