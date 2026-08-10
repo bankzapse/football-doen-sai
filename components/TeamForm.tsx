@@ -29,6 +29,11 @@ export default function TeamForm() {
           <label>จังหวัด</label>
           <ProvinceSelect />
         </div>
+        <div className="field full">
+          <label>โลโก้ทีม</label>
+          <input type="file" name="logo_file" accept="image/*" />
+          <span className="hint">อัปโหลดรูปโลโก้ทีม (ไม่บังคับ)</span>
+        </div>
         <div className="field">
           <label>ผู้จัดการทีม</label>
           <input name="manager_name" placeholder="ยามาล" />
@@ -61,6 +66,7 @@ export default function TeamForm() {
               <option value="MF">MF</option>
               <option value="FW">FW</option>
             </select>
+            <input type="file" name="player_photo" accept="image/*" className="pr-photo" title="รูปนักเตะ" />
             <button type="button" className="rowbtn" onClick={() => removeRow(row.key)} aria-label="ลบแถว">✕</button>
           </div>
         ))}

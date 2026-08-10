@@ -18,8 +18,13 @@ export interface Thread {
   tournament_id: string | null;
   reply_count: number;
   pinned: boolean;
+  status?: "approved" | "pending";
+  author_ip?: string | null;
   created_at: string;
 }
+
+/** ซ่อนกระทู้ที่รออนุมัติออกจากหน้าสาธารณะ (resilient หากยังไม่มีคอลัมน์ status) */
+const isPublic = (t: Thread) => t.status !== "pending";
 
 export interface Reply {
   id: string;
@@ -43,20 +48,37 @@ export const CATEGORY_LABEL: Record<ThreadCategory, string> = Object.fromEntries
 ) as Record<ThreadCategory, string>;
 
 // ---- reads (anon) — คืน [] ถ้ายังไม่เชื่อม Supabase ----
+// หน้าสาธารณะ: เห็นเฉพาะกระทู้ที่อนุมัติแล้ว (กรองฝั่ง JS เพื่อไม่พังหากยังไม่ได้รัน migration)
 export async function getThreads(category?: string): Promise<Thread[]> {
   const sb = getSupabase();
   if (!sb) return [];
   let query = sb.from("threads").select("*").order("pinned", { ascending: false }).order("created_at", { ascending: false });
   if (category) query = query.eq("category", category);
-  const { data } = await query.limit(100);
-  return (data as Thread[]) ?? [];
+  const { data } = await query.limit(150);
+  return ((data as Thread[]) ?? []).filter(isPublic).slice(0, 100);
+}
+
+/** สำหรับหลังบ้าน: เห็นทุกกระทู้รวมที่รออนุมัติ (pending ขึ้นก่อน) */
+export async function getThreadsAdmin(): Promise<Thread[]> {
+  const sb = getSupabaseAdmin() ?? getSupabase();
+  if (!sb) return [];
+  const { data } = await sb
+    .from("threads")
+    .select("*")
+    .order("created_at", { ascending: false })
+    .limit(300);
+  const rows = (data as Thread[]) ?? [];
+  // pending ขึ้นก่อน
+  return rows.sort((a, b) => Number(a.status === "pending" ? 0 : 1) - Number(b.status === "pending" ? 0 : 1));
 }
 
 export async function getThread(id: string): Promise<Thread | null> {
   const sb = getSupabase();
   if (!sb) return null;
   const { data } = await sb.from("threads").select("*").eq("id", id).maybeSingle();
-  return (data as Thread) ?? null;
+  const t = (data as Thread) ?? null;
+  if (t && !isPublic(t)) return null; // กระทู้รออนุมัติ ไม่แสดงสาธารณะ
+  return t;
 }
 
 export async function getReplies(threadId: string): Promise<Reply[]> {
@@ -79,7 +101,7 @@ export async function getThreadsForTournament(tournamentId: string): Promise<Thr
     .eq("tournament_id", tournamentId)
     .order("created_at", { ascending: false })
     .limit(20);
-  return (data as Thread[]) ?? [];
+  return ((data as Thread[]) ?? []).filter(isPublic);
 }
 
 // ---- writes (service role) ----

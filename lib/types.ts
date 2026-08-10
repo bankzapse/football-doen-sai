@@ -64,6 +64,7 @@ export interface Match {
   id: string;
   tournament_id: string;
   round: string;
+  group_name: string | null;
   team_home: string;
   team_away: string;
   score_home: number | null;

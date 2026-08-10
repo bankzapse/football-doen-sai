@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getTournamentById, getMatches, getStandings } from "@/lib/data";
-import { setWinners, addMatch, deleteMatch, addStanding, deleteStanding } from "@/app/admin/actions";
+import { setWinners, addMatch, deleteMatch, addStanding, deleteStanding, recalcStandings } from "@/app/admin/actions";
 
 export default async function AdminResultsPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -32,6 +32,14 @@ export default async function AdminResultsPage({ params }: { params: Promise<{ i
 
       {/* ตารางคะแนน */}
       <h3 style={{ fontSize: 16, margin: "26px 0 8px" }}>ตารางคะแนน ({standings.length} แถว)</h3>
+      <div className="callout" style={{ borderLeftColor: "var(--gold)" }}>
+        💡 กรอกผลรายคู่ด้านล่างพร้อม <b>ระบุกลุ่ม</b> ให้ครบ แล้วกดปุ่มนี้เพื่อให้ระบบ
+        <b> คำนวณตารางคะแนนอัตโนมัติ</b> (แต้ม/ได้เสีย/อันดับ) — จะแทนที่ตารางคะแนนเดิมทั้งหมด
+        <form action={recalcStandings} style={{ marginTop: 10 }}>
+          <input type="hidden" name="tournament_id" value={t.id} />
+          <button type="submit" className="btn green">⚙️ คำนวณตารางคะแนนจากผลรายคู่</button>
+        </form>
+      </div>
       {standings.length ? (
         <div className="tablescroll" style={{ marginBottom: 12 }}>
           <table className="atable tnum">
@@ -95,6 +103,7 @@ export default async function AdminResultsPage({ params }: { params: Promise<{ i
       <form action={addMatch} className="formgrid" style={{ gridTemplateColumns: "repeat(3,1fr)" }}>
         <input type="hidden" name="tournament_id" value={t.id} />
         <div className="field"><label>รอบ</label><input name="round" defaultValue="รอบแบ่งกลุ่ม" /></div>
+        <div className="field"><label>กลุ่ม (สำหรับคำนวณคะแนน)</label><input name="group_name" placeholder="เช่น กลุ่ม A (เว้นว่างถ้าเป็นรอบน็อคเอาท์)" /></div>
         <div className="field"><label>ลำดับแสดง</label><input name="sort" inputMode="numeric" defaultValue="0" /></div>
         <div className="field"><label>หมายเหตุ</label><input name="note" placeholder="เช่น จุดโทษ 4-3" /></div>
         <div className="field"><label>ทีมเจ้าบ้าน</label><input name="team_home" /></div>

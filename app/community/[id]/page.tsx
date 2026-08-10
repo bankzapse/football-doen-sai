@@ -22,13 +22,29 @@ export async function generateMetadata({
   };
 }
 
-export default async function ThreadPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function ThreadPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ error?: string }>;
+}) {
   const { id } = await params;
+  const { error } = await searchParams;
   const thread = await getThread(id);
   if (!thread) notFound();
 
   const replies = await getReplies(id);
   const linked = thread.tournament_id ? await getTournamentById(thread.tournament_id) : null;
+
+  const replyError =
+    error === "rate"
+      ? "ตอบถี่เกินไป กรุณารอสักครู่ (ทุก 30 วินาที)"
+      : error === "hourly"
+      ? "ตอบครบจำนวนต่อชั่วโมงแล้ว ลองใหม่ภายหลัง"
+      : error === "missing"
+      ? "กรุณากรอกชื่อและข้อความ"
+      : null;
 
   return (
     <>
@@ -81,6 +97,8 @@ export default async function ThreadPage({ params }: { params: Promise<{ id: str
             ))}
             {replies.length === 0 ? <p className="muted">ยังไม่มีความคิดเห็น — มาตอบเป็นคนแรก</p> : null}
           </div>
+
+          {replyError ? <div className="notice">{replyError}</div> : null}
 
           <form action={addReplyAction} className="reply-form">
             <input type="hidden" name="thread_id" value={thread.id} />

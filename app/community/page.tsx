@@ -14,9 +14,9 @@ export const metadata: Metadata = {
 export default async function CommunityPage({
   searchParams,
 }: {
-  searchParams: Promise<{ cat?: string }>;
+  searchParams: Promise<{ cat?: string; pending?: string }>;
 }) {
-  const { cat } = await searchParams;
+  const { cat, pending } = await searchParams;
   const active = CATEGORIES.find((c) => c.key === cat)?.key;
   const threads = await getThreads(active);
 
@@ -24,6 +24,11 @@ export default async function CommunityPage({
     <>
       <Header />
       <main className="wrap">
+        {pending ? (
+          <div className="notice ok" style={{ marginTop: 16 }}>
+            ส่งกระทู้แล้ว! เนื่องจากมีลิงก์หลายรายการ ระบบพักไว้ให้แอดมินตรวจสอบก่อนแสดง ขอบคุณครับ 🙏
+          </div>
+        ) : null}
         <div className="page-head" style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 12, alignItems: "flex-end" }}>
           <div>
             <h1>ชุมชนเดินสาย</h1>

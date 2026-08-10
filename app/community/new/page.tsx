@@ -31,6 +31,10 @@ export default async function NewThreadPage({
 
         {error === "missing" ? (
           <div className="notice">กรุณากรอกหัวข้อ เนื้อหา และชื่อผู้โพสต์ให้ครบ</div>
+        ) : error === "rate" ? (
+          <div className="notice">โพสต์ถี่เกินไป กรุณารอสักครู่ (โพสต์ได้ทุก 30 วินาที)</div>
+        ) : error === "hourly" ? (
+          <div className="notice">โพสต์ครบจำนวนที่กำหนดต่อชั่วโมงแล้ว ลองใหม่ภายหลังครับ</div>
         ) : error === "nodb" ? (
           <div className="notice">ยังไม่ได้เชื่อม Supabase จึงโพสต์ไม่ได้</div>
         ) : error ? (

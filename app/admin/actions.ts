@@ -146,6 +146,7 @@ export async function addMatch(formData: FormData) {
     await sb.from("matches").insert({
       tournament_id: id,
       round: str(formData.get("round")) || "รอบแบ่งกลุ่ม",
+      group_name: str(formData.get("group_name")),
       team_home: str(formData.get("team_home")) || "-",
       team_away: str(formData.get("team_away")) || "-",
       score_home: numOrNull(formData.get("score_home")),
@@ -205,17 +206,81 @@ export async function deleteStanding(formData: FormData) {
   redirect(`/admin/results/${tid}`);
 }
 
+/** คำนวณตารางคะแนนอัตโนมัติจากผลรายคู่ (เฉพาะคู่ที่ระบุกลุ่มและมีสกอร์ครบ) */
+export async function recalcStandings(formData: FormData) {
+  await requireUser("/admin");
+  const sb = getSupabaseAdmin();
+  const id = str(formData.get("tournament_id"));
+  if (!sb || !id) redirect(`/admin/results/${id ?? ""}`);
+
+  const { data: matches } = await sb!
+    .from("matches")
+    .select("group_name, team_home, team_away, score_home, score_away")
+    .eq("tournament_id", id)
+    .not("group_name", "is", null)
+    .not("score_home", "is", null)
+    .not("score_away", "is", null);
+
+  type Row = {
+    group_name: string; team_name: string; played: number;
+    win: number; draw: number; loss: number; gf: number; ga: number; points: number;
+  };
+  const table = new Map<string, Row>();
+  const ensure = (g: string, t: string): Row => {
+    const k = `${g}||${t}`;
+    if (!table.has(k))
+      table.set(k, { group_name: g, team_name: t, played: 0, win: 0, draw: 0, loss: 0, gf: 0, ga: 0, points: 0 });
+    return table.get(k)!;
+  };
+
+  for (const m of (matches ?? []) as Array<Record<string, unknown>>) {
+    const g = String(m.group_name);
+    const home = ensure(g, String(m.team_home));
+    const away = ensure(g, String(m.team_away));
+    const hs = Number(m.score_home);
+    const as = Number(m.score_away);
+    home.played++; away.played++;
+    home.gf += hs; home.ga += as; away.gf += as; away.ga += hs;
+    if (hs > as) { home.win++; home.points += 3; away.loss++; }
+    else if (hs < as) { away.win++; away.points += 3; home.loss++; }
+    else { home.draw++; away.draw++; home.points++; away.points++; }
+  }
+
+  // ลบตารางคะแนนเดิมของรายการนี้ แล้วใส่ที่คำนวณใหม่
+  await sb!.from("standings").delete().eq("tournament_id", id);
+  const byGroup: Record<string, Row[]> = {};
+  for (const r of table.values()) (byGroup[r.group_name] ??= []).push(r);
+  const insertRows: Record<string, unknown>[] = [];
+  for (const g of Object.keys(byGroup).sort()) {
+    byGroup[g].sort(
+      (x, y) => y.points - x.points || (y.gf - y.ga) - (x.gf - x.ga) || y.gf - x.gf
+    );
+    byGroup[g].forEach((r, i) => insertRows.push({ tournament_id: id, ...r, sort: i + 1 }));
+  }
+  if (insertRows.length) await sb!.from("standings").insert(insertRows);
+
+  revalidatePath("/results");
+  revalidatePath(`/admin/results/${id}`);
+  redirect(`/admin/results/${id}?ok=recalc`);
+}
+
 // ---------- ทีม / นักเตะ ----------
 export async function createTeam(formData: FormData) {
   await requireUser("/admin/teams/new");
   const sb = getSupabaseAdmin();
   if (!sb) redirect("/admin/teams/new?error=nodb");
 
+  // อัปโหลดโลโก้ทีม (ถ้ามี) ไม่งั้นใช้ลิงก์ที่วางมา
+  const logoUrl =
+    (await uploadImage(sb!, formData.get("logo_file") as File | null, "team")) ||
+    str(formData.get("logo_url"));
+
   const { data: team, error } = await sb!
     .from("teams")
     .insert({
       name: str(formData.get("name")) || "ทีมใหม่",
       province: str(formData.get("province")),
+      logo_url: logoUrl,
       manager_name: str(formData.get("manager_name")),
       coach_name: str(formData.get("coach_name")),
       coach2_name: str(formData.get("coach2_name")),
@@ -228,15 +293,21 @@ export async function createTeam(formData: FormData) {
   const names = formData.getAll("player_name").map((v) => String(v).trim());
   const numbers = formData.getAll("player_number");
   const positions = formData.getAll("player_position");
-  const rows = names
-    .map((name, i) => ({
+  const photos = formData.getAll("player_photo");
+  const rows: Record<string, unknown>[] = [];
+  for (let i = 0; i < names.length; i++) {
+    if (!names[i]) continue;
+    const pf = photos[i] instanceof File ? (photos[i] as File) : null;
+    const photoUrl = await uploadImage(sb!, pf, `player-${i}`);
+    rows.push({
       team_id: team!.id,
-      name,
+      name: names[i],
       number: numOrNull(numbers[i] ?? null),
       position: str(positions[i] ?? null),
+      photo_url: photoUrl,
       sort: i + 1,
-    }))
-    .filter((r) => r.name.length > 0);
+    });
+  }
   if (rows.length) await sb!.from("players").insert(rows);
 
   revalidatePath("/teams");
@@ -277,6 +348,20 @@ export async function togglePinThread(formData: FormData) {
   const pinned = str(formData.get("pinned")) === "true";
   if (sb && id) {
     await sb.from("threads").update({ pinned: !pinned }).eq("id", id);
+    revalidatePath("/admin/community");
+    revalidatePath("/community");
+  }
+  redirect("/admin/community");
+}
+
+/** อนุมัติกระทู้ที่ถูกพักไว้ (pending -> approved) */
+export async function approveThread(formData: FormData) {
+  const user = await getCurrentUser();
+  if (!user) redirect("/login?next=/admin/community");
+  const sb = getSupabaseAdmin();
+  const id = str(formData.get("id"));
+  if (sb && id) {
+    await sb.from("threads").update({ status: "approved" }).eq("id", id);
     revalidatePath("/admin/community");
     revalidatePath("/community");
   }

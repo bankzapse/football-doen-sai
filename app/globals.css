@@ -1838,3 +1838,14 @@ table.data a:hover {
   font-size: 13px;
   margin-top: 4px;
 }
+
+/* ---------- team form: photo inputs ---------- */
+.player-row {
+  flex-wrap: wrap;
+}
+.player-row .pr-photo {
+  flex: 1 1 160px;
+  min-width: 140px;
+  font-size: 12px;
+  padding: 7px 9px;
+}
