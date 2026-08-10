@@ -3,7 +3,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import TournamentBrowser from "@/components/TournamentBrowser";
 import { getTournaments, getSponsors } from "@/lib/data";
-import { getTournamentViews } from "@/lib/stats";
+import { getTournamentViews, getSiteViewStats } from "@/lib/stats";
 import { getRecentActiveThreads, CATEGORY_LABEL, type ThreadCategory } from "@/lib/community";
 import {
   formatBaht,
@@ -18,11 +18,12 @@ const TH_MONTHS = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.�
 export const revalidate = 60; // อัปเดตข้อมูล/ยอดวิวอัตโนมัติทุก 60 วินาที
 
 export default async function HomePage() {
-  const [tournaments, sponsors, viewsMap, recentThreads] = await Promise.all([
+  const [tournaments, sponsors, viewsMap, recentThreads, siteStats] = await Promise.all([
     getTournaments(),
     getSponsors(),
     getTournamentViews(),
     getRecentActiveThreads(6),
+    getSiteViewStats(),
   ]);
   const viewsBySlug = Object.fromEntries(viewsMap);
 
@@ -53,18 +54,34 @@ export default async function HomePage() {
             รวมทุกรายการแข่งขัน 7 คน / 9 คน / 11 คน — เปิดรับสมัครวันไหน แข่งวันไหน กี่ทีม
             เงินรางวัลเท่าไหร่ ดูถ่ายทอดสดได้ครบในที่เดียว
           </p>
-          <div className="stat-row">
-            <div className="stat">
-              <b className="tnum">{openCount}</b>
-              <span>รายการที่กำลังรับสมัคร</span>
+          <div className="stat-cards">
+            <div className="stat-card accent-green">
+              <div className="stat-ic">📋</div>
+              <div className="stat-body">
+                <b className="tnum">{openCount}</b>
+                <span>รายการที่กำลังรับสมัคร</span>
+              </div>
             </div>
-            <div className="stat">
-              <b className="tnum">{provinceCount}</b>
-              <span>จังหวัด</span>
+            <div className="stat-card accent-teal">
+              <div className="stat-ic">📍</div>
+              <div className="stat-body">
+                <b className="tnum">{provinceCount}</b>
+                <span>จังหวัดทั่วไทย</span>
+              </div>
             </div>
-            <div className="stat">
-              <b className="tnum">{formatBaht(totalPrize)}</b>
-              <span>เงินรางวัลรวม</span>
+            <div className="stat-card accent-gold">
+              <div className="stat-ic">🏆</div>
+              <div className="stat-body">
+                <b className="tnum gold-text">{formatBaht(totalPrize)}</b>
+                <span>เงินรางวัลรวม</span>
+              </div>
+            </div>
+            <div className="stat-card accent-slate">
+              <div className="stat-ic">👁</div>
+              <div className="stat-body">
+                <b className="tnum">{(siteStats?.total ?? 0).toLocaleString("th-TH")}</b>
+                <span>ยอดเข้าชมเว็บ</span>
+              </div>
             </div>
           </div>
 
@@ -75,19 +92,21 @@ export default async function HomePage() {
                 LIVE สด
               </span>
               <div>
-                <div className="lmatch">{live.name}</div>
+                <Link href={`/tournament/${live.slug}`} className="lmatch">
+                  {live.name}
+                </Link>
                 <div className="lmeta">
                   {live.venue?.name} · จ.{live.province}
                 </div>
               </div>
-              <a
-                href={live.live_url!}
-                target="_blank"
-                rel="noreferrer"
-                className="btn green spacer"
-              >
-                ดูสด ▶
-              </a>
+              <div className="spacer live-actions">
+                <Link href={`/tournament/${live.slug}`} className="btn ghost">
+                  รายละเอียด
+                </Link>
+                <a href={live.live_url!} target="_blank" rel="noreferrer" className="btn green">
+                  ดูสด ▶
+                </a>
+              </div>
             </div>
           ) : null}
         </section>
