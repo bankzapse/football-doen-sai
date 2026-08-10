@@ -1998,3 +1998,47 @@ a.lmatch:hover { color: var(--pitch); }
   font-variant-numeric: tabular-nums;
 }
 .tl-body b { font-weight: 800; }
+
+/* ---------- home: หานักเตะ ---------- */
+.home-players {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 12px;
+}
+.hp-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  transition: transform 0.1s ease, border-color 0.15s;
+}
+.hp-card:hover { transform: translateY(-2px); border-color: color-mix(in srgb, var(--pitch) 45%, var(--border)); }
+.hp-photo {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  background: var(--surface-3) center/cover no-repeat;
+  display: grid;
+  place-items: center;
+}
+.hp-photo > span {
+  font-size: 40px;
+  font-weight: 900;
+  color: var(--muted-2);
+}
+.hp-pos {
+  position: absolute;
+  left: 8px;
+  bottom: 8px;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 6px;
+  backdrop-filter: blur(3px);
+}
+.hp-body { padding: 10px 12px; display: flex; flex-direction: column; gap: 2px; }
+.hp-body b { font-size: 14px; line-height: 1.3; }
+.hp-body span { font-size: 12px; }
+.hp-rate { color: var(--gold); font-weight: 700; }

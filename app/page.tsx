@@ -5,6 +5,7 @@ import TournamentBrowser from "@/components/TournamentBrowser";
 import { getTournaments, getSponsors } from "@/lib/data";
 import { getTournamentViews, getSiteViewStats } from "@/lib/stats";
 import { getRecentActiveThreads, CATEGORY_LABEL, type ThreadCategory } from "@/lib/community";
+import { getApprovedPlayers, POSITION_LABEL } from "@/lib/players";
 import {
   formatBaht,
   formatThaiDateRange,
@@ -18,14 +19,16 @@ const TH_MONTHS = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.�
 export const revalidate = 60; // อัปเดตข้อมูล/ยอดวิวอัตโนมัติทุก 60 วินาที
 
 export default async function HomePage() {
-  const [tournaments, sponsors, viewsMap, recentThreads, siteStats] = await Promise.all([
+  const [tournaments, sponsors, viewsMap, recentThreads, siteStats, allPlayers] = await Promise.all([
     getTournaments(),
     getSponsors(),
     getTournamentViews(),
     getRecentActiveThreads(6),
     getSiteViewStats(),
+    getApprovedPlayers(),
   ]);
   const viewsBySlug = Object.fromEntries(viewsMap);
+  const homePlayers = allPlayers.slice(0, 8);
 
   const live = tournaments.find((t) => t.status === "live" && t.live_url);
   const upcoming = tournaments
@@ -174,38 +177,6 @@ export default async function HomePage() {
             </div>
           </section>
 
-          {/* คุยกันในชุมชน — กระทู้ที่มีความเคลื่อนไหวล่าสุด */}
-          {recentThreads.length > 0 ? (
-            <section style={{ margin: "44px 0" }}>
-              <div className="section-title">
-                <h2>คุยกันในชุมชน</h2>
-                <Link href="/community" style={{ marginLeft: "auto", fontSize: 14 }} className="muted">
-                  ดูทั้งหมด →
-                </Link>
-              </div>
-              <div className="community-feed">
-                {recentThreads.map((t) => (
-                  <Link key={t.id} href={`/community/${t.id}`} className="thread-row">
-                    <div className="thread-main">
-                      <div className="thread-cat">
-                        <span className="cat-tag">{CATEGORY_LABEL[t.category as ThreadCategory]}</span>
-                        {t.province ? <span className="muted"> · {t.province}</span> : null}
-                      </div>
-                      <div className="thread-title">{t.title}</div>
-                      <div className="thread-meta muted">
-                        โดย {t.author_name} · {timeAgo(t.created_at)}
-                      </div>
-                    </div>
-                    <div className="thread-replies">
-                      <b className="tnum">{t.reply_count}</b>
-                      <span>ตอบ</span>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            </section>
-          ) : null}
-
           {/* SEO schedule table */}
           <section className="seo">
             <div className="section-title">
@@ -247,6 +218,73 @@ export default async function HomePage() {
               </table>
             </div>
           </section>
+
+          {/* หานักเตะเดินสาย */}
+          {homePlayers.length > 0 ? (
+            <section style={{ margin: "44px 0" }}>
+              <div className="section-title">
+                <h2>หานักเตะเดินสาย</h2>
+                <Link href="/players" style={{ marginLeft: "auto", fontSize: 14 }} className="muted">
+                  ดูทั้งหมด →
+                </Link>
+              </div>
+              <div className="home-players">
+                {homePlayers.map((p) => (
+                  <Link key={p.id} href={`/players/${p.id}`} className="hp-card">
+                    <div
+                      className="hp-photo"
+                      style={p.photo_url ? { backgroundImage: `url(${p.photo_url})` } : undefined}
+                    >
+                      {!p.photo_url ? <span>{p.name.slice(0, 1)}</span> : null}
+                      <span className="hp-pos">{POSITION_LABEL[p.position]}</span>
+                    </div>
+                    <div className="hp-body">
+                      <b>
+                        {p.name}
+                        {p.nickname ? ` (${p.nickname})` : ""}
+                      </b>
+                      <span className="muted">
+                        {[p.province, p.age ? `${p.age} ปี` : null].filter(Boolean).join(" · ")}
+                      </span>
+                      {p.rate ? <span className="hp-rate">💰 {p.rate}</span> : null}
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </section>
+          ) : null}
+
+          {/* คุยกันในชุมชน — กระทู้ที่มีความเคลื่อนไหวล่าสุด */}
+          {recentThreads.length > 0 ? (
+            <section style={{ margin: "44px 0" }}>
+              <div className="section-title">
+                <h2>คุยกันในชุมชน</h2>
+                <Link href="/community" style={{ marginLeft: "auto", fontSize: 14 }} className="muted">
+                  ดูทั้งหมด →
+                </Link>
+              </div>
+              <div className="community-feed">
+                {recentThreads.map((t) => (
+                  <Link key={t.id} href={`/community/${t.id}`} className="thread-row">
+                    <div className="thread-main">
+                      <div className="thread-cat">
+                        <span className="cat-tag">{CATEGORY_LABEL[t.category as ThreadCategory]}</span>
+                        {t.province ? <span className="muted"> · {t.province}</span> : null}
+                      </div>
+                      <div className="thread-title">{t.title}</div>
+                      <div className="thread-meta muted">
+                        โดย {t.author_name} · {timeAgo(t.created_at)}
+                      </div>
+                    </div>
+                    <div className="thread-replies">
+                      <b className="tnum">{t.reply_count}</b>
+                      <span>ตอบ</span>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </section>
+          ) : null}
         </section>
       </main>
 
