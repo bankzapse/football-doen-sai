@@ -235,7 +235,7 @@ export default async function HomePage() {
                       className="hp-photo"
                       style={p.photo_url ? { backgroundImage: `url(${p.photo_url})` } : undefined}
                     >
-                      {!p.photo_url ? <span>{p.name.slice(0, 1)}</span> : null}
+                      {!p.photo_url ? <span className="hp-initial">{p.name.slice(0, 1)}</span> : null}
                       <span className="hp-pos">{POSITION_LABEL[p.position]}</span>
                     </div>
                     <div className="hp-body">

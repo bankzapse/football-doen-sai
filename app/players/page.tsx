@@ -98,7 +98,7 @@ export default async function PlayersPage({
                     p.photo_url ? { backgroundImage: `url(${p.photo_url})` } : undefined
                   }
                 >
-                  {!p.photo_url ? <span>{POSITION_LABEL[p.position].charAt(0)}</span> : null}
+                  {!p.photo_url ? <span className="fp-initial">{POSITION_LABEL[p.position].charAt(0)}</span> : null}
                   <span className="fp-badge">{POSITION_LABEL[p.position]}</span>
                 </div>
                 <div className="fp-body">

@@ -1764,7 +1764,7 @@ table.data a:hover {
   display: grid;
   place-items: center;
 }
-.fp-photo > span:first-child {
+.fp-initial {
   font-size: 44px;
   font-weight: 900;
   color: color-mix(in srgb, var(--pitch) 55%, var(--surface));
@@ -2021,7 +2021,7 @@ a.lmatch:hover { color: var(--pitch); }
   display: grid;
   place-items: center;
 }
-.hp-photo > span {
+.hp-photo > .hp-initial {
   font-size: 40px;
   font-weight: 900;
   color: var(--muted-2);
