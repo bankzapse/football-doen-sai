@@ -247,6 +247,7 @@ export default async function HomePage() {
                         {[p.province, p.age ? `${p.age} ปี` : null].filter(Boolean).join(" · ")}
                       </span>
                       {p.rate ? <span className="hp-rate">💰 {p.rate}</span> : null}
+                      {p.bio ? <span className="hp-bio">{p.bio}</span> : null}
                     </div>
                   </Link>
                 ))}
