@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { getSupabaseAdmin } from "@/lib/supabase";
 import { getCurrentUser } from "@/lib/supabase/server";
+import { savePlayerHistoryFromForm } from "@/lib/players";
 
 function num(v: FormDataEntryValue | null): number {
   const n = Number(String(v ?? "").replace(/[^0-9.]/g, ""));
@@ -562,17 +563,21 @@ function playerPayload(formData: FormData, photoUrl: string | null) {
   const foot = str(formData.get("foot"));
   const age = numOrNull(formData.get("age"));
   const height = numOrNull(formData.get("height"));
+  const weight = numOrNull(formData.get("weight"));
   return {
     name: str(formData.get("name")) || "นักเตะ",
     nickname: str(formData.get("nickname")),
     position: PLAYER_POS.includes(position) ? position : "any",
     province: str(formData.get("province")),
     age: age != null ? Math.round(age) : null,
+    birthdate: str(formData.get("birthdate")),
     height: height != null ? Math.round(height) : null,
+    weight: weight != null ? Math.round(weight) : null,
     foot: foot && PLAYER_FEET.includes(foot) ? foot : null,
     rate: str(formData.get("rate")),
     bio: str(formData.get("bio")),
     contact: str(formData.get("contact")),
+    facebook: str(formData.get("facebook")),
     photo_url: photoUrl,
     status: str(formData.get("status")) === "pending" ? "pending" : "approved",
   };
@@ -589,8 +594,13 @@ export async function createPlayer(formData: FormData) {
   if (!sb) redirect("/admin/players?error=nodb");
   const uploaded = await uploadImage(sb!, formData.get("photo_file") as File | null, "player");
   const photoUrl = uploaded || str(formData.get("photo_url"));
-  const { error } = await sb!.from("free_players").insert(playerPayload(formData, photoUrl));
+  const { data, error } = await sb!
+    .from("free_players")
+    .insert(playerPayload(formData, photoUrl))
+    .select("id")
+    .single();
   if (error) redirect(`/admin/players?error=${encodeURIComponent(error.message)}`);
+  if (data) await savePlayerHistoryFromForm(sb!, data.id, formData);
   revalidatePlayers();
   redirect("/admin/players?ok=created");
 }
@@ -604,6 +614,7 @@ export async function updatePlayer(formData: FormData) {
   const photoUrl = uploaded || str(formData.get("photo_url"));
   const { error } = await sb!.from("free_players").update(playerPayload(formData, photoUrl)).eq("id", id);
   if (error) redirect(`/admin/players/${id}?error=${encodeURIComponent(error.message)}`);
+  await savePlayerHistoryFromForm(sb!, id, formData, true);
   revalidatePlayers();
   redirect("/admin/players?ok=updated");
 }

@@ -125,6 +125,9 @@ export default async function PlayersPage({
                   ) : (
                     <div className="muted" style={{ fontSize: 13 }}>ไม่ระบุช่องทางติดต่อ</div>
                   )}
+                  <Link href={`/players/${p.id}`} className="btn ghost block" style={{ marginTop: 10 }}>
+                    ดูโปรไฟล์เต็ม →
+                  </Link>
                 </div>
               </div>
             ))}

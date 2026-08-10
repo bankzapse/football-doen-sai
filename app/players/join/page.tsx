@@ -4,6 +4,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ProvinceSelect from "@/components/ProvinceSelect";
 import RateInput from "@/components/RateInput";
+import HistoryRows from "@/components/HistoryRows";
 import { submitPlayerAction } from "@/app/players/actions";
 import { POSITIONS } from "@/lib/players";
 
@@ -64,12 +65,20 @@ export default async function JoinPlayerPage({
               <ProvinceSelect />
             </div>
             <div className="field">
+              <label>วันเกิด</label>
+              <input name="birthdate" type="date" />
+            </div>
+            <div className="field">
               <label>อายุ</label>
               <input name="age" type="number" min="10" max="70" placeholder="24" />
             </div>
             <div className="field">
               <label>ส่วนสูง (ซม.)</label>
               <input name="height" type="number" min="120" max="220" placeholder="172" />
+            </div>
+            <div className="field">
+              <label>น้ำหนัก (กก.)</label>
+              <input name="weight" type="number" min="30" max="150" placeholder="64" />
             </div>
             <div className="field">
               <label>เท้าถนัด</label>
@@ -94,9 +103,18 @@ export default async function JoinPlayerPage({
               />
             </div>
 
+            <div className="field full">
+              <label>ประวัติการเล่น (สโมสรที่เคยอยู่)</label>
+              <HistoryRows />
+            </div>
+
             <div className="field">
               <label>ช่องทางติดต่อ *</label>
               <input name="contact" required placeholder="LINE / เบอร์โทร" />
+            </div>
+            <div className="field">
+              <label>Facebook</label>
+              <input name="facebook" placeholder="ชื่อ / ลิงก์ Facebook" />
             </div>
             <div className="field">
               <label>รูปนักเตะ (อัปโหลดจากเครื่อง)</label>

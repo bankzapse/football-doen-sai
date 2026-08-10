@@ -1,4 +1,5 @@
 import { getSupabase, getSupabaseAdmin } from "./supabase";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 export type PlayerPosition = "gk" | "df" | "mf" | "fw" | "any";
 export type PlayerFoot = "left" | "right" | "both";
@@ -10,14 +11,60 @@ export interface FreePlayer {
   position: PlayerPosition;
   province: string | null;
   age: number | null;
+  birthdate: string | null;
   height: number | null;
+  weight: number | null;
   foot: PlayerFoot | null;
   rate: string | null; // ค่าตัว / เรทต่อแมตช์
   bio: string | null; // สถิติ / โปรไฟล์
   contact: string | null;
+  facebook: string | null;
   photo_url: string | null;
   status: "pending" | "approved";
   created_at: string;
+}
+
+export interface PlayerHistory {
+  id: string;
+  player_id: string;
+  period: string | null;
+  club: string | null;
+  note: string | null;
+  sort: number;
+}
+
+export async function getPlayerHistory(playerId: string): Promise<PlayerHistory[]> {
+  const sb = getSupabase();
+  if (!sb) return [];
+  const { data } = await sb
+    .from("player_history")
+    .select("*")
+    .eq("player_id", playerId)
+    .order("sort", { ascending: true });
+  return (data as PlayerHistory[]) ?? [];
+}
+
+/** บันทึกประวัติการเล่นจากฟอร์ม (history_period[]/history_club[]/history_note[]) */
+export async function savePlayerHistoryFromForm(
+  sb: SupabaseClient,
+  playerId: string,
+  formData: FormData,
+  replace = false
+): Promise<void> {
+  const periods = formData.getAll("history_period");
+  const clubs = formData.getAll("history_club");
+  const notes = formData.getAll("history_note");
+  const n = Math.max(periods.length, clubs.length, notes.length);
+  const rows: Record<string, unknown>[] = [];
+  for (let i = 0; i < n; i++) {
+    const period = String(periods[i] ?? "").trim();
+    const club = String(clubs[i] ?? "").trim();
+    const note = String(notes[i] ?? "").trim();
+    if (!period && !club && !note) continue;
+    rows.push({ player_id: playerId, period: period || null, club: club || null, note: note || null, sort: i + 1 });
+  }
+  if (replace) await sb.from("player_history").delete().eq("player_id", playerId);
+  if (rows.length) await sb.from("player_history").insert(rows);
 }
 
 export const POSITIONS: { key: PlayerPosition; label: string; emoji: string }[] = [

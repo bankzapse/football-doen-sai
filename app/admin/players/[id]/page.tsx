@@ -2,7 +2,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import ProvinceSelect from "@/components/ProvinceSelect";
 import RateInput from "@/components/RateInput";
-import { getPlayerById, POSITIONS } from "@/lib/players";
+import HistoryRows from "@/components/HistoryRows";
+import { getPlayerById, getPlayerHistory, POSITIONS } from "@/lib/players";
 import { updatePlayer } from "@/app/admin/actions";
 
 export default async function EditPlayerPage({
@@ -16,6 +17,7 @@ export default async function EditPlayerPage({
   const { error } = await searchParams;
   const p = await getPlayerById(id);
   if (!p) notFound();
+  const history = await getPlayerHistory(id);
 
   return (
     <>
@@ -54,12 +56,20 @@ export default async function EditPlayerPage({
             <ProvinceSelect defaultValue={p.province} />
           </div>
           <div className="field">
+            <label>วันเกิด</label>
+            <input name="birthdate" type="date" defaultValue={p.birthdate ?? ""} />
+          </div>
+          <div className="field">
             <label>อายุ</label>
             <input name="age" type="number" min="10" max="70" defaultValue={p.age ?? ""} />
           </div>
           <div className="field">
             <label>ส่วนสูง (ซม.)</label>
             <input name="height" type="number" min="120" max="220" defaultValue={p.height ?? ""} />
+          </div>
+          <div className="field">
+            <label>น้ำหนัก (กก.)</label>
+            <input name="weight" type="number" min="30" max="150" defaultValue={p.weight ?? ""} />
           </div>
           <div className="field">
             <label>เท้าถนัด</label>
@@ -77,6 +87,10 @@ export default async function EditPlayerPage({
           <div className="field">
             <label>ช่องทางติดต่อ</label>
             <input name="contact" defaultValue={p.contact ?? ""} />
+          </div>
+          <div className="field">
+            <label>Facebook</label>
+            <input name="facebook" defaultValue={p.facebook ?? ""} />
           </div>
           <div className="field">
             <label>อัปโหลดรูปใหม่จากเครื่อง</label>
@@ -98,6 +112,10 @@ export default async function EditPlayerPage({
           <div className="field full">
             <label>สถิติ / โปรไฟล์</label>
             <textarea name="bio" defaultValue={p.bio ?? ""} style={{ minHeight: 80 }} />
+          </div>
+          <div className="field full">
+            <label>ประวัติการเล่น (สโมสร)</label>
+            <HistoryRows initial={history} />
           </div>
           <div className="field">
             <label>สถานะ</label>

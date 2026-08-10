@@ -1,6 +1,7 @@
 import Link from "next/link";
 import ProvinceSelect from "@/components/ProvinceSelect";
 import RateInput from "@/components/RateInput";
+import HistoryRows from "@/components/HistoryRows";
 import { getAllPlayersAdmin, POSITION_LABEL } from "@/lib/players";
 import { isSupabaseConfigured } from "@/lib/supabase";
 import {
@@ -149,12 +150,20 @@ export default async function AdminPlayersPage({
             <ProvinceSelect />
           </div>
           <div className="field">
+            <label>วันเกิด</label>
+            <input name="birthdate" type="date" />
+          </div>
+          <div className="field">
             <label>อายุ</label>
             <input name="age" type="number" min="10" max="70" placeholder="24" />
           </div>
           <div className="field">
             <label>ส่วนสูง (ซม.)</label>
             <input name="height" type="number" min="120" max="220" placeholder="172" />
+          </div>
+          <div className="field">
+            <label>น้ำหนัก (กก.)</label>
+            <input name="weight" type="number" min="30" max="150" placeholder="64" />
           </div>
           <div className="field">
             <label>เท้าถนัด</label>
@@ -174,12 +183,20 @@ export default async function AdminPlayersPage({
             <input name="contact" placeholder="LINE / เบอร์โทร" />
           </div>
           <div className="field">
+            <label>Facebook</label>
+            <input name="facebook" placeholder="ชื่อ / ลิงก์ Facebook" />
+          </div>
+          <div className="field">
             <label>อัปโหลดรูปจากเครื่อง</label>
             <input name="photo_file" type="file" accept="image/*" />
           </div>
           <div className="field full">
             <label>สถิติ / โปรไฟล์</label>
             <textarea name="bio" placeholder="ประสบการณ์ ความถนัด สถิติต่างๆ" style={{ minHeight: 80 }} />
+          </div>
+          <div className="field full">
+            <label>ประวัติการเล่น (สโมสร)</label>
+            <HistoryRows />
           </div>
           <div className="field">
             <label>สถานะ</label>

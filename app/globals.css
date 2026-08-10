@@ -1924,3 +1924,77 @@ a.lmatch:hover { color: var(--pitch); }
   accent-color: var(--pitch);
   cursor: pointer;
 }
+
+/* ---------- history rows (admin edit) ---------- */
+.history-rows { display: flex; flex-direction: column; gap: 8px; }
+.history-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.history-row input {
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 8px;
+  padding: 9px 11px;
+  font-family: inherit;
+  font-size: 14px;
+}
+.history-row .hr-period { width: 130px; flex: none; }
+.history-row .hr-club { flex: 1 1 160px; min-width: 140px; }
+.history-row .hr-note { flex: 1 1 160px; min-width: 140px; }
+
+/* ---------- player profile page ---------- */
+.player-profile {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin: 16px 0 24px;
+  flex-wrap: wrap;
+}
+.pp-photo {
+  width: 120px;
+  height: 120px;
+  flex: none;
+  border-radius: 18px;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--pitch), var(--pitch-dim));
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-size: 44px;
+  font-weight: 900;
+  box-shadow: var(--shadow);
+}
+.pp-photo img { width: 100%; height: 100%; object-fit: cover; }
+.pp-head h1 { margin: 6px 0 4px; font-size: clamp(24px, 4vw, 34px); font-weight: 900; }
+.pp-nick { color: var(--muted); font-weight: 700; }
+.pp-pos-tag {
+  display: inline-block;
+  background: color-mix(in srgb, var(--pitch) 18%, transparent);
+  color: var(--pitch-dim);
+  font-weight: 800;
+  font-size: 12px;
+  padding: 3px 10px;
+  border-radius: 999px;
+}
+
+/* ---------- career timeline ---------- */
+.timeline { position: relative; margin-top: 6px; padding-left: 6px; }
+.tl-item { position: relative; padding: 0 0 16px 22px; border-left: 2px solid var(--border); }
+.tl-item:last-child { border-left-color: transparent; padding-bottom: 0; }
+.tl-dot {
+  position: absolute;
+  left: -7px;
+  top: 3px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--pitch);
+  border: 2px solid var(--surface);
+}
+.tl-period {
+  display: inline-block;
+  font-weight: 800;
+  color: var(--gold);
+  margin-right: 8px;
+  font-variant-numeric: tabular-nums;
+}
+.tl-body b { font-weight: 800; }
