@@ -29,9 +29,13 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         <Link href="/admin/teams">ทีม / นักเตะ</Link>
         <Link href="/admin/venues">สนามแข่ง</Link>
         <Link href="/admin/sponsors">สปอนเซอร์</Link>
+        <Link href="/admin/players">นักเตะเดินสาย</Link>
 
         <div className="grp">ชุมชน</div>
         <Link href="/admin/community">จัดการกระทู้</Link>
+
+        <div className="grp">สถิติ</div>
+        <Link href="/admin/stats">สถิติการเข้าชม</Link>
 
         <div className="grp">ระบบ</div>
         <Link href="/">← กลับหน้าเว็บ</Link>

@@ -17,6 +17,7 @@ export default function Header() {
           <Link href="/live">ถ่ายทอดสด</Link>
           <Link href="/results">ผลแข่ง</Link>
           <Link href="/teams">ทีม</Link>
+          <Link href="/players">หานักเตะ</Link>
           <Link href="/community">ชุมชน</Link>
           <Link href="/sponsors">สปอนเซอร์</Link>
         </nav>

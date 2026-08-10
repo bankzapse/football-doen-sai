@@ -1710,3 +1710,115 @@ table.data a:hover {
   width: 110px;
   flex: none;
 }
+
+/* ---------- นักเตะเดินสาย (free-agent directory) ---------- */
+.hi {
+  color: var(--pitch);
+}
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.chip.sm {
+  padding: 6px 11px;
+  font-size: 12px;
+}
+
+.fp-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 14px;
+}
+.fp-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+.fp-photo {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  background-color: var(--surface-3);
+  background-size: cover;
+  background-position: center;
+  display: grid;
+  place-items: center;
+}
+.fp-photo > span:first-child {
+  font-size: 44px;
+  font-weight: 900;
+  color: color-mix(in srgb, var(--pitch) 55%, var(--surface));
+}
+.fp-badge {
+  position: absolute;
+  left: 10px;
+  bottom: 10px;
+  background: rgba(0, 0, 0, 0.62);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+.fp-body {
+  padding: 12px 14px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.fp-name {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--text);
+}
+.fp-name small {
+  font-weight: 600;
+  color: var(--muted);
+}
+.fp-meta {
+  font-size: 13px;
+}
+.fp-rate {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--gold);
+}
+.fp-bio {
+  font-size: 13px;
+  color: var(--muted);
+  margin: 2px 0 0;
+  line-height: 1.5;
+}
+.fp-contact {
+  margin-top: 4px;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--pitch);
+}
+
+/* ---------- สถิติการเข้าชม (admin) ---------- */
+.stat-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+}
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+}
+.stat-value {
+  font-size: 30px;
+  font-weight: 900;
+  color: var(--pitch);
+  line-height: 1.1;
+}
+.stat-label {
+  font-size: 13px;
+  margin-top: 4px;
+}

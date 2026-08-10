@@ -467,3 +467,83 @@ export async function deleteSponsor(formData: FormData) {
   }
   redirect("/admin/sponsors?ok=deleted");
 }
+
+// ---------- นักเตะเดินสาย (free_players) ----------
+const PLAYER_POS = ["gk", "df", "mf", "fw", "any"];
+const PLAYER_FEET = ["left", "right", "both"];
+
+function playerPayload(formData: FormData, photoUrl: string | null) {
+  const position = str(formData.get("position")) || "any";
+  const foot = str(formData.get("foot"));
+  const age = numOrNull(formData.get("age"));
+  const height = numOrNull(formData.get("height"));
+  return {
+    name: str(formData.get("name")) || "นักเตะ",
+    nickname: str(formData.get("nickname")),
+    position: PLAYER_POS.includes(position) ? position : "any",
+    province: str(formData.get("province")),
+    age: age != null ? Math.round(age) : null,
+    height: height != null ? Math.round(height) : null,
+    foot: foot && PLAYER_FEET.includes(foot) ? foot : null,
+    rate: str(formData.get("rate")),
+    bio: str(formData.get("bio")),
+    contact: str(formData.get("contact")),
+    photo_url: photoUrl,
+    status: str(formData.get("status")) === "pending" ? "pending" : "approved",
+  };
+}
+
+function revalidatePlayers() {
+  revalidatePath("/admin/players");
+  revalidatePath("/players");
+}
+
+export async function createPlayer(formData: FormData) {
+  await requireUser("/admin/players");
+  const sb = getSupabaseAdmin();
+  if (!sb) redirect("/admin/players?error=nodb");
+  const uploaded = await uploadImage(sb!, formData.get("photo_file") as File | null, "player");
+  const photoUrl = uploaded || str(formData.get("photo_url"));
+  const { error } = await sb!.from("free_players").insert(playerPayload(formData, photoUrl));
+  if (error) redirect(`/admin/players?error=${encodeURIComponent(error.message)}`);
+  revalidatePlayers();
+  redirect("/admin/players?ok=created");
+}
+
+export async function updatePlayer(formData: FormData) {
+  await requireUser("/admin/players");
+  const sb = getSupabaseAdmin();
+  const id = str(formData.get("id"));
+  if (!sb || !id) redirect("/admin/players");
+  const uploaded = await uploadImage(sb!, formData.get("photo_file") as File | null, "player");
+  const photoUrl = uploaded || str(formData.get("photo_url"));
+  const { error } = await sb!.from("free_players").update(playerPayload(formData, photoUrl)).eq("id", id);
+  if (error) redirect(`/admin/players/${id}?error=${encodeURIComponent(error.message)}`);
+  revalidatePlayers();
+  redirect("/admin/players?ok=updated");
+}
+
+/** อนุมัติ / เลิกแสดง (สลับ pending <-> approved) */
+export async function togglePlayerStatus(formData: FormData) {
+  await requireUser("/admin/players");
+  const sb = getSupabaseAdmin();
+  const id = str(formData.get("id"));
+  const status = str(formData.get("status")); // สถานะปัจจุบัน
+  if (sb && id) {
+    const next = status === "approved" ? "pending" : "approved";
+    await sb.from("free_players").update({ status: next }).eq("id", id);
+    revalidatePlayers();
+  }
+  redirect("/admin/players");
+}
+
+export async function deletePlayer(formData: FormData) {
+  await requireUser("/admin/players");
+  const sb = getSupabaseAdmin();
+  const id = str(formData.get("id"));
+  if (sb && id) {
+    await sb.from("free_players").delete().eq("id", id);
+    revalidatePlayers();
+  }
+  redirect("/admin/players?ok=deleted");
+}

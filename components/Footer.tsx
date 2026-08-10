@@ -22,6 +22,7 @@ export default function Footer() {
           <Link href="/live">แข่งวันนี้ / ถ่ายทอดสด</Link>
           <Link href="/results">ผลการแข่งขัน</Link>
           <Link href="/teams">ทำเนียบทีม</Link>
+          <Link href="/players">หานักเตะเดินสาย</Link>
           <Link href="/venues">สนามแข่ง</Link>
         </div>
         <div>

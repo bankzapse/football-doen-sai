@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Kanit } from "next/font/google";
 import "./globals.css";
+import ViewTracker from "@/components/ViewTracker";
 
 // Kanit ล้วน — สายจัดจ้าน สปอร์ต หนักแน่น ทั้งหัวข้อและเนื้อหา
 const display = Kanit({
@@ -44,7 +45,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="th" className={`${display.variable} ${sans.variable}`}>
-      <body>{children}</body>
+      <body>
+        {children}
+        <ViewTracker />
+      </body>
     </html>
   );
 }

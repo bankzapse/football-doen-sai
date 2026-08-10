@@ -5,6 +5,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { getTournamentBySlug, getTournaments, getMatches, getStandings } from "@/lib/data";
 import { getThreadsForTournament, CATEGORY_LABEL, type ThreadCategory } from "@/lib/community";
+import { getPlayersByProvince, POSITION_LABEL, FOOT_LABEL } from "@/lib/players";
 import {
   formatBaht,
   formatThaiDate,
@@ -71,6 +72,7 @@ export default async function TournamentPage({
   const cover = t.image_url || FALLBACK_IMG;
   const embed = t.live_url ? toYouTubeEmbed(t.live_url) : null;
   const threads = await getThreadsForTournament(t.id);
+  const localPlayers = await getPlayersByProvince(t.province, 3);
   const isFinished = t.status === "finished";
   const matches = isFinished ? await getMatches(t.id) : [];
   const standings = isFinished ? await getStandings(t.id) : [];
@@ -342,6 +344,55 @@ export default async function TournamentPage({
             ) : null}
           </section>
         ) : null}
+
+        {/* นักเตะเดินสายในจังหวัดเดียวกัน — ชวนมาร่วมทีมลงรายการนี้ */}
+        <section style={{ paddingBottom: 10 }}>
+          <div className="section-title">
+            <h2>นักเตะเดินสายแถว จ.{t.province}</h2>
+            <Link href={`/players?province=${encodeURIComponent(t.province)}`} className="btn ghost" style={{ marginLeft: "auto" }}>
+              ดูทั้งหมด
+            </Link>
+          </div>
+          {localPlayers.length === 0 ? (
+            <p className="muted">
+              ยังไม่มีนักเตะลงชื่อในจังหวัดนี้ — เป็นนักเตะหาทีม?{" "}
+              <Link href="/players/join" className="hi" style={{ fontWeight: 800 }}>
+                ลงชื่อที่นี่
+              </Link>
+            </p>
+          ) : (
+            <div className="fp-grid">
+              {localPlayers.map((p) => (
+                <div key={p.id} className="fp-card">
+                  <div
+                    className="fp-photo"
+                    style={p.photo_url ? { backgroundImage: `url(${p.photo_url})` } : undefined}
+                  >
+                    {!p.photo_url ? <span>{POSITION_LABEL[p.position].charAt(0)}</span> : null}
+                    <span className="fp-badge">{POSITION_LABEL[p.position]}</span>
+                  </div>
+                  <div className="fp-body">
+                    <div className="fp-name">
+                      {p.name}
+                      {p.nickname ? <small> ({p.nickname})</small> : null}
+                    </div>
+                    <div className="fp-meta muted">
+                      {[
+                        p.age ? `${p.age} ปี` : null,
+                        p.height ? `${p.height} ซม.` : null,
+                        p.foot ? FOOT_LABEL[p.foot] : null,
+                      ]
+                        .filter(Boolean)
+                        .join(" · ")}
+                    </div>
+                    {p.rate ? <div className="fp-rate">💰 {p.rate}</div> : null}
+                    {p.contact ? <div className="fp-contact">📞 {p.contact}</div> : null}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
 
         {/* กระทู้พูดคุย/หาคู่แข่ง เกี่ยวกับรายการนี้ */}
         <section style={{ paddingBottom: 20 }}>
