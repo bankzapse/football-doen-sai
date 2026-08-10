@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import ProvinceSelect from "@/components/ProvinceSelect";
 import RateInput from "@/components/RateInput";
 import HistoryRows from "@/components/HistoryRows";
+import PhotoInput from "@/components/PhotoInput";
 import { getPlayerById, getPlayerHistory, POSITIONS } from "@/lib/players";
 import { updatePlayer } from "@/app/admin/actions";
 
@@ -28,7 +29,11 @@ export default async function EditPlayerPage({
         </Link>
       </div>
 
-      {error ? <div className="notice">บันทึกไม่สำเร็จ: {error}</div> : null}
+      {error === "upload" ? (
+        <div className="notice">อัปโหลดรูปไม่สำเร็จ — ลองไฟล์ที่เล็กลง (ไม่เกิน 15MB) หรือเป็น JPG/PNG</div>
+      ) : error ? (
+        <div className="notice">บันทึกไม่สำเร็จ: {error}</div>
+      ) : null}
 
       <form action={updatePlayer}>
         <input type="hidden" name="id" value={p.id} />
@@ -94,7 +99,7 @@ export default async function EditPlayerPage({
           </div>
           <div className="field">
             <label>อัปโหลดรูปใหม่จากเครื่อง</label>
-            <input name="photo_file" type="file" accept="image/*" />
+            <PhotoInput />
             <span className="hint">ถ้าไม่เลือกจะใช้รูปเดิม</span>
           </div>
           <div className="field">

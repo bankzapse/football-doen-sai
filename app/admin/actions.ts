@@ -592,7 +592,9 @@ export async function createPlayer(formData: FormData) {
   await requireUser("/admin/players");
   const sb = getSupabaseAdmin();
   if (!sb) redirect("/admin/players?error=nodb");
-  const uploaded = await uploadImage(sb!, formData.get("photo_file") as File | null, "player");
+  const photoFile = formData.get("photo_file") as File | null;
+  const uploaded = await uploadImage(sb!, photoFile, "player");
+  if (photoFile && photoFile.size > 0 && !uploaded) redirect("/admin/players?error=upload");
   const photoUrl = uploaded || str(formData.get("photo_url"));
   const { data, error } = await sb!
     .from("free_players")
@@ -610,7 +612,9 @@ export async function updatePlayer(formData: FormData) {
   const sb = getSupabaseAdmin();
   const id = str(formData.get("id"));
   if (!sb || !id) redirect("/admin/players");
-  const uploaded = await uploadImage(sb!, formData.get("photo_file") as File | null, "player");
+  const photoFile = formData.get("photo_file") as File | null;
+  const uploaded = await uploadImage(sb!, photoFile, "player");
+  if (photoFile && photoFile.size > 0 && !uploaded) redirect(`/admin/players/${id}?error=upload`);
   const photoUrl = uploaded || str(formData.get("photo_url"));
   const { error } = await sb!.from("free_players").update(playerPayload(formData, photoUrl)).eq("id", id);
   if (error) redirect(`/admin/players/${id}?error=${encodeURIComponent(error.message)}`);

@@ -2,6 +2,7 @@ import Link from "next/link";
 import ProvinceSelect from "@/components/ProvinceSelect";
 import RateInput from "@/components/RateInput";
 import HistoryRows from "@/components/HistoryRows";
+import PhotoInput from "@/components/PhotoInput";
 import { getAllPlayersAdmin, POSITION_LABEL } from "@/lib/players";
 import { isSupabaseConfigured } from "@/lib/supabase";
 import {
@@ -47,6 +48,8 @@ export default async function AdminPlayersPage({
         <div className="notice">
           ยังไม่ได้เชื่อม Supabase จึงบันทึกไม่ได้ — ใส่คีย์ใน <code>.env.local</code> ก่อน
         </div>
+      ) : error === "upload" ? (
+        <div className="notice">อัปโหลดรูปไม่สำเร็จ — ลองไฟล์ที่เล็กลง (ไม่เกิน 15MB) หรือเป็น JPG/PNG</div>
       ) : error ? (
         <div className="notice">บันทึกไม่สำเร็จ: {error}</div>
       ) : null}
@@ -188,7 +191,7 @@ export default async function AdminPlayersPage({
           </div>
           <div className="field">
             <label>อัปโหลดรูปจากเครื่อง</label>
-            <input name="photo_file" type="file" accept="image/*" />
+            <PhotoInput />
           </div>
           <div className="field full">
             <label>สถิติ / โปรไฟล์</label>

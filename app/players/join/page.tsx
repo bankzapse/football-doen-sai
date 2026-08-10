@@ -5,6 +5,7 @@ import Footer from "@/components/Footer";
 import ProvinceSelect from "@/components/ProvinceSelect";
 import RateInput from "@/components/RateInput";
 import HistoryRows from "@/components/HistoryRows";
+import PhotoInput from "@/components/PhotoInput";
 import { submitPlayerAction } from "@/app/players/actions";
 import { POSITIONS } from "@/lib/players";
 
@@ -34,6 +35,8 @@ export default async function JoinPlayerPage({
 
         {error === "missing" ? (
           <div className="notice">กรุณากรอกชื่อและช่องทางติดต่อให้ครบ</div>
+        ) : error === "upload" ? (
+          <div className="notice">อัปโหลดรูปไม่สำเร็จ — ลองไฟล์ที่เล็กลง (ไม่เกิน 15MB) หรือเป็น JPG/PNG</div>
         ) : error === "nodb" ? (
           <div className="notice">ยังไม่ได้เชื่อม Supabase จึงบันทึกไม่ได้</div>
         ) : error ? (
@@ -118,7 +121,7 @@ export default async function JoinPlayerPage({
             </div>
             <div className="field">
               <label>รูปนักเตะ (อัปโหลดจากเครื่อง)</label>
-              <input name="photo_file" type="file" accept="image/*" />
+              <PhotoInput />
             </div>
 
             {/* honeypot กันบอท */}

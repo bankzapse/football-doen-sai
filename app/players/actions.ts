@@ -48,7 +48,9 @@ export async function submitPlayerAction(formData: FormData) {
 
   const position = str(formData.get("position")) || "any";
   const foot = str(formData.get("foot"));
-  const photoUrl = await uploadPhoto(sb!, formData.get("photo_file") as File | null);
+  const photoFile = formData.get("photo_file") as File | null;
+  const photoUrl = await uploadPhoto(sb!, photoFile);
+  if (photoFile && photoFile.size > 0 && !photoUrl) redirect("/players/join?error=upload");
 
   const { data, error } = await sb!
     .from("free_players")

@@ -4,6 +4,12 @@ const nextConfig = {
   turbopack: {
     root: import.meta.dirname,
   },
+  // เพิ่มลิมิตอัปโหลดผ่าน Server Actions (ดีฟอลต์ 1MB) รองรับรูปจากมือถือ
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "15mb",
+    },
+  },
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "images.unsplash.com" },
