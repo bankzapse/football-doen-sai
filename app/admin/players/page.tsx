@@ -1,5 +1,6 @@
 import Link from "next/link";
 import ProvinceSelect from "@/components/ProvinceSelect";
+import RateInput from "@/components/RateInput";
 import { getAllPlayersAdmin, POSITION_LABEL } from "@/lib/players";
 import { isSupabaseConfigured } from "@/lib/supabase";
 import {
@@ -166,7 +167,7 @@ export default async function AdminPlayersPage({
           </div>
           <div className="field">
             <label>ค่าตัว / เรทต่อแมตช์</label>
-            <input name="rate" placeholder="500/แมตช์" />
+            <RateInput />
           </div>
           <div className="field">
             <label>ช่องทางติดต่อ</label>

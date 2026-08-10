@@ -3,6 +3,7 @@ import Link from "next/link";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ProvinceSelect from "@/components/ProvinceSelect";
+import RateInput from "@/components/RateInput";
 import { submitPlayerAction } from "@/app/players/actions";
 import { POSITIONS } from "@/lib/players";
 
@@ -81,7 +82,7 @@ export default async function JoinPlayerPage({
             </div>
             <div className="field">
               <label>ค่าตัว / เรทต่อแมตช์</label>
-              <input name="rate" placeholder="เช่น 500/แมตช์ หรือ เจรจาได้" />
+              <RateInput />
             </div>
 
             <div className="field full">

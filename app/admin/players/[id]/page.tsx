@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import ProvinceSelect from "@/components/ProvinceSelect";
+import RateInput from "@/components/RateInput";
 import { getPlayerById, POSITIONS } from "@/lib/players";
 import { updatePlayer } from "@/app/admin/actions";
 
@@ -71,7 +72,7 @@ export default async function EditPlayerPage({
           </div>
           <div className="field">
             <label>ค่าตัว / เรทต่อแมตช์</label>
-            <input name="rate" defaultValue={p.rate ?? ""} />
+            <RateInput defaultValue={p.rate ?? ""} />
           </div>
           <div className="field">
             <label>ช่องทางติดต่อ</label>
