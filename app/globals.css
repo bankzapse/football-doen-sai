@@ -588,6 +588,7 @@ select.sel {
 /* ระดับ "สปอนเซอร์ทั่วไป" (standard) — เรียบ นิ่ง เล็กสุด */
 .sponsor {
   position: relative;
+  overflow: hidden;
   aspect-ratio: 16 / 10;
   border-radius: 10px;
   border: 1px solid var(--border);
@@ -600,48 +601,24 @@ select.sel {
   color: var(--muted);
   padding: 8px;
 }
-/* ป้ายกำกับระดับมุมบนซ้าย (เฉพาะทอง/หลัก) */
-.sponsor.platinum::after,
-.sponsor.gold::after {
-  position: absolute;
-  top: 6px;
-  left: 6px;
-  font-size: 9px;
-  font-weight: 800;
-  letter-spacing: 0.5px;
-  padding: 1px 7px;
-  border-radius: 5px;
-  line-height: 1.6;
-}
-/* ระดับ "สปอนเซอร์ทอง" (gold) — ขอบทอง พื้นไล่เฉดทองอ่อน ตัวหนังสือทอง */
+/* ระดับ "สปอนเซอร์ทอง" (gold) — โทนทองจางๆ ขอบทองบาง */
 .sponsor.gold {
-  border: 1.5px solid color-mix(in srgb, var(--gold) 60%, var(--border));
-  background: linear-gradient(150deg, var(--gold-soft), var(--surface) 78%);
+  border: 1px solid color-mix(in srgb, var(--gold) 28%, var(--border));
+  background: linear-gradient(150deg, color-mix(in srgb, var(--gold-soft) 50%, var(--surface)), var(--surface));
   color: var(--gold);
   font-size: 13px;
   font-weight: 800;
-  box-shadow: 0 6px 16px -13px color-mix(in srgb, var(--gold) 85%, transparent);
 }
-.sponsor.gold::after {
-  content: "★ ทอง";
-  background: color-mix(in srgb, var(--gold) 22%, transparent);
-  color: var(--gold);
-}
-/* ระดับ "พาร์ทเนอร์หลัก" (platinum) — ใหญ่สุด เต็ม 2 คอลัมน์ ขอบทองหนา เงาเด่น */
+/* ระดับ "พาร์ทเนอร์หลัก" (platinum) — ใหญ่สุด เต็ม 2 คอลัมน์ โทนทองนุ่ม */
 .sponsor.platinum {
   grid-column: span 2;
   aspect-ratio: 16 / 6;
-  background: linear-gradient(135deg, #ffe9ad, var(--gold-soft) 55%, var(--surface));
-  color: #8a6a00;
-  border: 2px solid var(--gold);
+  background: linear-gradient(135deg, var(--gold-soft), var(--surface) 72%);
+  color: var(--gold);
+  border: 1.5px solid color-mix(in srgb, var(--gold) 42%, var(--border));
   font-size: 15px;
   font-weight: 900;
-  box-shadow: 0 10px 24px -14px color-mix(in srgb, var(--gold) 90%, transparent);
-}
-.sponsor.platinum::after {
-  content: "พาร์ทเนอร์หลัก";
-  background: var(--gold);
-  color: #3a2c00;
+  box-shadow: 0 8px 20px -16px color-mix(in srgb, var(--gold) 55%, transparent);
 }
 .upcoming {
   display: flex;
@@ -2100,8 +2077,11 @@ a.lmatch:hover { color: var(--pitch); }
   gap: 12px;
 }
 /* โลโก้รูปภายในกล่องสปอนเซอร์ (ทั้งด้านขวาและด้านล่าง) */
+/* โลโก้เต็มกรอบ (ครอบเต็มกล่อง) */
 .sponsor img {
-  max-width: 82%;
-  max-height: 70%;
-  object-fit: contain;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
