@@ -38,6 +38,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         <Link href="/admin/stats">สถิติการเข้าชม</Link>
 
         <div className="grp">ระบบ</div>
+        <Link href="/admin/settings">ตั้งค่าเว็บ</Link>
         <Link href="/">← กลับหน้าเว็บ</Link>
 
         <div className="admin-user">

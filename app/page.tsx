@@ -6,6 +6,7 @@ import { getTournaments, getSponsors } from "@/lib/data";
 import { getTournamentViews, getSiteViewStats } from "@/lib/stats";
 import { getRecentActiveThreads, CATEGORY_LABEL, type ThreadCategory } from "@/lib/community";
 import { getApprovedPlayers, POSITION_LABEL } from "@/lib/players";
+import { getSiteSettings } from "@/lib/settings";
 import {
   formatBaht,
   formatThaiDateRange,
@@ -19,13 +20,14 @@ const TH_MONTHS = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.�
 export const revalidate = 60; // อัปเดตข้อมูล/ยอดวิวอัตโนมัติทุก 60 วินาที
 
 export default async function HomePage() {
-  const [tournaments, sponsors, viewsMap, recentThreads, siteStats, allPlayers] = await Promise.all([
+  const [tournaments, sponsors, viewsMap, recentThreads, siteStats, allPlayers, settings] = await Promise.all([
     getTournaments(),
     getSponsors(),
     getTournamentViews(),
     getRecentActiveThreads(6),
     getSiteViewStats(),
     getApprovedPlayers(),
+    getSiteSettings(),
   ]);
   const viewsBySlug = Object.fromEntries(viewsMap);
   const homePlayers = allPlayers.slice(0, 8);
@@ -132,7 +134,12 @@ export default async function HomePage() {
         <section className="wrap">
           <div className="grid-2">
             <div>
-              <TournamentBrowser tournaments={sortedTournaments} viewsBySlug={viewsBySlug} />
+              <TournamentBrowser
+                tournaments={sortedTournaments}
+                viewsBySlug={viewsBySlug}
+                gridCols={settings.gridCols}
+                gridRows={settings.gridRows}
+              />
             </div>
 
             <aside>

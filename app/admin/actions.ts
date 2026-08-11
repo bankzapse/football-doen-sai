@@ -549,6 +549,33 @@ export async function toggleSponsor(formData: FormData) {
   redirect("/admin/sponsors");
 }
 
+// ---------- ตั้งค่าเว็บ (site settings) ----------
+export async function updateSiteSettings(formData: FormData) {
+  await requireUser("/admin/settings");
+  const sb = getSupabaseAdmin();
+  if (!sb) redirect("/admin/settings?error=nodb");
+
+  const colsRaw = parseInt(String(formData.get("home_grid_columns") ?? ""), 10);
+  const rowsRaw = parseInt(String(formData.get("home_grid_rows") ?? ""), 10);
+  const cols = [2, 3, 4].includes(colsRaw) ? colsRaw : 2;
+  const rows = Number.isFinite(rowsRaw) && rowsRaw >= 0 ? rowsRaw : 0;
+
+  const { error } = await sb!
+    .from("site_settings")
+    .upsert(
+      [
+        { key: "home_grid_columns", value: String(cols) },
+        { key: "home_grid_rows", value: String(rows) },
+      ],
+      { onConflict: "key" }
+    );
+  if (error) redirect(`/admin/settings?error=${encodeURIComponent(error.message)}`);
+
+  revalidatePath("/");
+  revalidatePath("/admin/settings");
+  redirect("/admin/settings?ok=1");
+}
+
 /** เลื่อนลำดับสปอนเซอร์ขึ้น/ลง ภายใน section (side/bottom) */
 export async function moveSponsor(formData: FormData) {
   await requireUser("/admin/sponsors");

@@ -16,14 +16,19 @@ const STATUS_CHIPS: { key: StatusFilter; label: string }[] = [
 export default function TournamentBrowser({
   tournaments,
   viewsBySlug,
+  gridCols = 2,
+  gridRows = 0,
 }: {
   tournaments: Tournament[];
   viewsBySlug?: Record<string, number>;
+  gridCols?: number;
+  gridRows?: number;
 }) {
   const [q, setQ] = useState("");
   const [province, setProvince] = useState("");
   const [format, setFormat] = useState("");
   const [status, setStatus] = useState<StatusFilter>("all");
+  const [showAll, setShowAll] = useState(false);
 
   const provinces = useMemo(
     () => Array.from(new Set(tournaments.map((t) => t.province))).sort(),
@@ -80,15 +85,33 @@ export default function TournamentBrowser({
         <span>แสดง {filtered.length} รายการ</span>
       </div>
 
-      {filtered.length === 0 ? (
-        <p className="muted">ไม่พบรายการที่ตรงกับเงื่อนไข ลองเปลี่ยนตัวกรองดูครับ</p>
-      ) : (
-        <div className="cards">
-          {filtered.map((t) => (
-            <TournamentCard key={t.id} t={t} views={viewsBySlug?.[t.slug] ?? 0} />
-          ))}
-        </div>
-      )}
+      {(() => {
+        const limit = gridRows > 0 ? gridCols * gridRows : Infinity;
+        const visible = showAll ? filtered : filtered.slice(0, limit);
+        const hidden = filtered.length - visible.length;
+        if (filtered.length === 0) {
+          return <p className="muted">ไม่พบรายการที่ตรงกับเงื่อนไข ลองเปลี่ยนตัวกรองดูครับ</p>;
+        }
+        return (
+          <>
+            <div className="cards" style={{ "--cols": gridCols } as React.CSSProperties}>
+              {visible.map((t) => (
+                <TournamentCard key={t.id} t={t} views={viewsBySlug?.[t.slug] ?? 0} />
+              ))}
+            </div>
+            {hidden > 0 ? (
+              <button className="btn ghost block" style={{ marginTop: 16 }} onClick={() => setShowAll(true)}>
+                ดูทั้งหมด ({hidden} รายการที่เหลือ)
+              </button>
+            ) : null}
+            {showAll && gridRows > 0 && filtered.length > gridCols * gridRows ? (
+              <button className="btn ghost block" style={{ marginTop: 16 }} onClick={() => setShowAll(false)}>
+                ย่อกลับ
+              </button>
+            ) : null}
+          </>
+        );
+      })()}
     </>
   );
 }
