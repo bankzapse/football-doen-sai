@@ -1,13 +1,95 @@
 import Link from "next/link";
 import { getAllSponsorsAdmin } from "@/lib/data";
 import { isSupabaseConfigured } from "@/lib/supabase";
-import { createSponsor, deleteSponsor, toggleSponsor } from "@/app/admin/actions";
+import { createSponsor, deleteSponsor, toggleSponsor, moveSponsor } from "@/app/admin/actions";
+import type { Sponsor } from "@/lib/types";
 
 const TIER_LABEL: Record<string, string> = {
   platinum: "พาร์ทเนอร์หลัก",
   gold: "สปอนเซอร์ทอง",
   standard: "สปอนเซอร์",
 };
+
+const PLACEMENT_LABEL: Record<string, string> = {
+  side: "ด้านขวา",
+  bottom: "ด้านล่าง",
+  both: "ทั้งสอง",
+};
+
+/** ตารางสปอนเซอร์ 1 section พร้อมปุ่มเลื่อนลำดับ ↑/↓ */
+function SponsorSection({ title, group, list }: { title: string; group: "side" | "bottom"; list: Sponsor[] }) {
+  return (
+    <div style={{ marginBottom: 26 }}>
+      <div className="section-title">
+        <h2 style={{ fontSize: 17 }}>{title}</h2>
+        <span>{list.length} ราย</span>
+      </div>
+      <div className="tablescroll">
+        <table className="atable">
+          <thead>
+            <tr>
+              <th>ลำดับ</th>
+              <th>ชื่อ</th>
+              <th>ระดับ</th>
+              <th>ตำแหน่ง</th>
+              <th>สถานะ</th>
+              <th>จัดการ</th>
+            </tr>
+          </thead>
+          <tbody>
+            {list.map((s, i) => (
+              <tr key={s.id}>
+                <td style={{ display: "flex", gap: 4 }}>
+                  <form action={moveSponsor}>
+                    <input type="hidden" name="id" value={s.id} />
+                    <input type="hidden" name="dir" value="up" />
+                    <input type="hidden" name="group" value={group} />
+                    <button className="rowbtn" disabled={i === 0} aria-label="เลื่อนขึ้น">↑</button>
+                  </form>
+                  <form action={moveSponsor}>
+                    <input type="hidden" name="id" value={s.id} />
+                    <input type="hidden" name="dir" value="down" />
+                    <input type="hidden" name="group" value={group} />
+                    <button className="rowbtn" disabled={i === list.length - 1} aria-label="เลื่อนลง">↓</button>
+                  </form>
+                </td>
+                <td>
+                  {s.logo_url ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={s.logo_url} alt={s.name} style={{ height: 22, width: "auto", display: "inline-block", verticalAlign: "middle", marginRight: 6 }} />
+                  ) : null}
+                  {s.name}
+                </td>
+                <td>{TIER_LABEL[s.tier] ?? s.tier}</td>
+                <td>{PLACEMENT_LABEL[s.placement ?? "side"]}</td>
+                <td>
+                  <span className="pill" style={{ background: s.active ? "var(--surface-3)" : "transparent", color: s.active ? "var(--pitch)" : "var(--muted)", border: "1px solid var(--border)" }}>
+                    {s.active ? "แสดง" : "ซ่อน"}
+                  </span>
+                </td>
+                <td style={{ display: "flex", gap: 6 }}>
+                  <Link href={`/admin/sponsors/${s.id}`} className="rowbtn">แก้ไข</Link>
+                  <form action={toggleSponsor}>
+                    <input type="hidden" name="id" value={s.id} />
+                    <input type="hidden" name="active" value={String(s.active)} />
+                    <button className="rowbtn">{s.active ? "ซ่อน" : "แสดง"}</button>
+                  </form>
+                  <form action={deleteSponsor}>
+                    <input type="hidden" name="id" value={s.id} />
+                    <button className="rowbtn" style={{ color: "var(--live)" }}>ลบ</button>
+                  </form>
+                </td>
+              </tr>
+            ))}
+            {list.length === 0 ? (
+              <tr><td colSpan={6} className="muted">ยังไม่มีสปอนเซอร์ในตำแหน่งนี้</td></tr>
+            ) : null}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
 
 const OK_MSG: Record<string, string> = {
   created: "เพิ่มสปอนเซอร์เรียบร้อยแล้ว",
@@ -22,6 +104,8 @@ export default async function AdminSponsorsPage({
 }) {
   const { error, ok } = await searchParams;
   const sponsors = await getAllSponsorsAdmin();
+  const sideList = sponsors.filter((s) => (s.placement ?? "side") !== "bottom");
+  const bottomList = sponsors.filter((s) => s.placement === "bottom" || s.placement === "both");
 
   return (
     <>
@@ -47,71 +131,12 @@ export default async function AdminSponsorsPage({
         </div>
       ) : null}
 
-      <div className="tablescroll" style={{ marginBottom: 24 }}>
-        <table className="atable">
-          <thead>
-            <tr>
-              <th>ชื่อ</th>
-              <th>ระดับ</th>
-              <th>เว็บไซต์</th>
-              <th>สถานะ</th>
-              <th>จัดการ</th>
-            </tr>
-          </thead>
-          <tbody>
-            {sponsors.map((s) => (
-              <tr key={s.id}>
-                <td>{s.name}</td>
-                <td>{TIER_LABEL[s.tier] ?? s.tier}</td>
-                <td>
-                  {s.website ? (
-                    <a href={s.website} target="_blank" rel="noreferrer">
-                      ลิงก์
-                    </a>
-                  ) : (
-                    "-"
-                  )}
-                </td>
-                <td>
-                  <span
-                    className="pill"
-                    style={{
-                      background: s.active ? "var(--surface-3)" : "transparent",
-                      color: s.active ? "var(--pitch)" : "var(--muted)",
-                      border: "1px solid var(--border)",
-                    }}
-                  >
-                    {s.active ? "แสดง" : "ซ่อน"}
-                  </span>
-                </td>
-                <td style={{ display: "flex", gap: 6 }}>
-                  <Link href={`/admin/sponsors/${s.id}`} className="rowbtn">
-                    แก้ไข
-                  </Link>
-                  <form action={toggleSponsor}>
-                    <input type="hidden" name="id" value={s.id} />
-                    <input type="hidden" name="active" value={String(s.active)} />
-                    <button className="rowbtn">{s.active ? "ซ่อน" : "แสดง"}</button>
-                  </form>
-                  <form action={deleteSponsor}>
-                    <input type="hidden" name="id" value={s.id} />
-                    <button className="rowbtn" style={{ color: "var(--live)" }}>
-                      ลบ
-                    </button>
-                  </form>
-                </td>
-              </tr>
-            ))}
-            {sponsors.length === 0 ? (
-              <tr>
-                <td colSpan={5} className="muted">
-                  ยังไม่มีสปอนเซอร์
-                </td>
-              </tr>
-            ) : null}
-          </tbody>
-        </table>
+      <div className="callout">
+        จัดลำดับการแสดงด้วยปุ่ม ↑ / ↓ ในแต่ละ section — สปอนเซอร์ที่ตั้งเป็น “ทั้งสอง” จะปรากฏในทั้งสอง section
       </div>
+
+      <SponsorSection title="สปอนเซอร์ด้านขวา (คอลัมน์ข้าง)" group="side" list={sideList} />
+      <SponsorSection title="สปอนเซอร์ด้านล่าง (แถบเต็มความกว้าง)" group="bottom" list={bottomList} />
 
       <h3 style={{ fontSize: 16, margin: "8px 0 10px" }}>+ เพิ่มสปอนเซอร์ใหม่</h3>
       <form action={createSponsor}>

@@ -109,7 +109,12 @@ export async function getVenueById(id: string): Promise<Venue | null> {
 export async function getSponsors(): Promise<Sponsor[]> {
   const sb = getSupabase();
   if (!sb) return seedSponsors.filter((s) => s.active);
-  const { data, error } = await sb.from("sponsors").select("*").eq("active", true);
+  const { data, error } = await sb
+    .from("sponsors")
+    .select("*")
+    .eq("active", true)
+    .order("sort", { ascending: true })
+    .order("name", { ascending: true });
   if (error || !data) return seedSponsors.filter((s) => s.active);
   return data as unknown as Sponsor[];
 }
@@ -121,7 +126,7 @@ export async function getAllSponsorsAdmin(): Promise<Sponsor[]> {
   const { data, error } = await sb
     .from("sponsors")
     .select("*")
-    .order("tier", { ascending: true })
+    .order("sort", { ascending: true })
     .order("name", { ascending: true });
   if (error || !data) return seedSponsors;
   return data as unknown as Sponsor[];

@@ -546,6 +546,40 @@ export async function toggleSponsor(formData: FormData) {
   redirect("/admin/sponsors");
 }
 
+/** เลื่อนลำดับสปอนเซอร์ขึ้น/ลง ภายใน section (side/bottom) */
+export async function moveSponsor(formData: FormData) {
+  await requireUser("/admin/sponsors");
+  const sb = getSupabaseAdmin();
+  const id = str(formData.get("id"));
+  const dir = str(formData.get("dir"));
+  const group = str(formData.get("group")); // "side" | "bottom"
+  if (!sb || !id) redirect("/admin/sponsors");
+
+  const placements = group === "bottom" ? ["bottom", "both"] : ["side", "both"];
+  const { data } = await sb!
+    .from("sponsors")
+    .select("id, sort")
+    .in("placement", placements)
+    .order("sort", { ascending: true })
+    .order("name", { ascending: true });
+  const list = data ?? [];
+  const idx = list.findIndex((s) => s.id === id);
+  const swapIdx = dir === "up" ? idx - 1 : idx + 1;
+  if (idx < 0 || swapIdx < 0 || swapIdx >= list.length) redirect("/admin/sponsors");
+
+  // จัดเลข sort ให้เรียงต่อเนื่องก่อน แล้วสลับตำแหน่งคู่ที่เลือก
+  for (let i = 0; i < list.length; i++) {
+    if (list[i].sort !== i) await sb!.from("sponsors").update({ sort: i }).eq("id", list[i].id);
+  }
+  await sb!.from("sponsors").update({ sort: swapIdx }).eq("id", list[idx].id);
+  await sb!.from("sponsors").update({ sort: idx }).eq("id", list[swapIdx].id);
+
+  revalidatePath("/admin/sponsors");
+  revalidatePath("/");
+  revalidatePath("/sponsors");
+  redirect("/admin/sponsors");
+}
+
 export async function deleteSponsor(formData: FormData) {
   await requireUser("/admin/sponsors");
   const sb = getSupabaseAdmin();
