@@ -490,15 +490,18 @@ export async function deleteVenue(formData: FormData) {
 const SPONSOR_TIERS = ["platinum", "gold", "standard"];
 
 const SPONSOR_PLACEMENTS = ["side", "bottom", "both"];
+const SPONSOR_SIZES = ["sm", "md", "lg"];
 
 function sponsorPayload(formData: FormData, logoUrl: string | null) {
   const tier = str(formData.get("tier")) || "standard";
   const placement = str(formData.get("placement")) || "side";
+  const size = str(formData.get("size")) || "sm";
   return {
     name: str(formData.get("name")) || "สปอนเซอร์ใหม่",
     logo_url: logoUrl,
     tier: SPONSOR_TIERS.includes(tier) ? tier : "standard",
     placement: SPONSOR_PLACEMENTS.includes(placement) ? placement : "side",
+    size: SPONSOR_SIZES.includes(size) ? size : "sm",
     website: str(formData.get("website")),
     active: str(formData.get("active")) !== "false",
   };

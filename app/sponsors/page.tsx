@@ -40,7 +40,7 @@ export default async function SponsorsPage() {
               </div>
               <div className="sponsor-grid" style={{ gridTemplateColumns: "repeat(auto-fill,minmax(160px,1fr))", marginBottom: 30 }}>
                 {byTier(tier).map((s) => (
-                  <div key={s.id} className={`sponsor ${s.tier}`} style={{ aspectRatio: "16/9" }}>
+                  <div key={s.id} className={`sponsor ${s.tier} size-${s.size ?? "sm"}`} style={{ aspectRatio: "16/9" }}>
                     {s.name}
                   </div>
                 ))}

@@ -609,16 +609,25 @@ select.sel {
   font-size: 13px;
   font-weight: 800;
 }
-/* ระดับ "พาร์ทเนอร์หลัก" (platinum) — ใหญ่สุด เต็ม 2 คอลัมน์ โทนทองนุ่ม */
+/* ระดับ "พาร์ทเนอร์หลัก" (platinum) — โทนทองนุ่ม (ขนาดคุมด้วยคลาส size-*) */
 .sponsor.platinum {
-  grid-column: span 2;
-  aspect-ratio: 16 / 6;
   background: linear-gradient(135deg, var(--gold-soft), var(--surface) 72%);
   color: var(--gold);
   border: 1.5px solid color-mix(in srgb, var(--gold) 42%, var(--border));
   font-size: 15px;
   font-weight: 900;
   box-shadow: 0 8px 20px -16px color-mix(in srgb, var(--gold) 55%, transparent);
+}
+
+/* ขนาดกล่องสปอนเซอร์ (แอดมินปรับเองได้) — จำนวนคอลัมน์ที่กินพื้นที่ */
+.sponsor.size-sm {
+  grid-column: span 1;
+}
+.sponsor.size-md {
+  grid-column: span 2;
+}
+.sponsor.size-lg {
+  grid-column: span 3;
 }
 .upcoming {
   display: flex;

@@ -140,7 +140,7 @@ export default async function HomePage() {
                 <h4>สปอนเซอร์หลักของเว็บ</h4>
                 <div className="sponsor-grid">
                   {sideSponsors.map((s) => (
-                    <div key={s.id} className={`sponsor ${s.tier}`}>
+                    <div key={s.id} className={`sponsor ${s.tier} size-${s.size ?? "sm"}`}>
                       {s.logo_url ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img src={s.logo_url} alt={s.name} />
@@ -250,7 +250,7 @@ export default async function HomePage() {
               </div>
               <div className="sponsor-band-grid">
                 {bottomSponsors.map((s) => (
-                  <div key={s.id} className={`sponsor ${s.tier}`}>
+                  <div key={s.id} className={`sponsor ${s.tier} size-${s.size ?? "sm"}`}>
                     {s.logo_url ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img src={s.logo_url} alt={s.name} />

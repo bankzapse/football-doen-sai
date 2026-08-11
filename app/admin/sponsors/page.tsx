@@ -162,6 +162,14 @@ export default async function AdminSponsorsPage({
             </select>
           </div>
           <div className="field">
+            <label>ขนาดกล่อง</label>
+            <select name="size" defaultValue="sm">
+              <option value="sm">เล็ก (1 ช่อง)</option>
+              <option value="md">กลาง (2 ช่อง)</option>
+              <option value="lg">ใหญ่ (3 ช่อง)</option>
+            </select>
+          </div>
+          <div className="field">
             <label>อัปโหลดโลโก้จากเครื่อง</label>
             <input name="logo_file" type="file" accept="image/*" />
             <span className="hint">เลือกไฟล์รูปได้เลย (เก็บใน Supabase Storage)</span>

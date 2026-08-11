@@ -23,6 +23,7 @@ export interface Sponsor {
   logo_url: string | null;
   tier: "platinum" | "gold" | "standard";
   placement?: "side" | "bottom" | "both";
+  size?: "sm" | "md" | "lg";
   website: string | null;
   active: boolean;
 }
