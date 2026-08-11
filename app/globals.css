@@ -2053,3 +2053,17 @@ a.lmatch:hover { color: var(--pitch); }
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
+/* ---------- bottom sponsor band ---------- */
+.sponsor-band { margin: 44px 0; }
+.sponsor-band-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 12px;
+}
+/* โลโก้รูปภายในกล่องสปอนเซอร์ (ทั้งด้านขวาและด้านล่าง) */
+.sponsor img {
+  max-width: 82%;
+  max-height: 70%;
+  object-fit: contain;
+}

@@ -42,6 +42,14 @@ export default async function EditSponsorPage({
             </select>
           </div>
           <div className="field">
+            <label>ตำแหน่งแสดงผล</label>
+            <select name="placement" defaultValue={s.placement ?? "side"}>
+              <option value="side">ด้านขวา (คอลัมน์ข้าง)</option>
+              <option value="bottom">ด้านล่าง (แถบเต็มความกว้าง)</option>
+              <option value="both">ทั้งด้านขวาและด้านล่าง</option>
+            </select>
+          </div>
+          <div className="field">
             <label>อัปโหลดโลโก้ใหม่จากเครื่อง</label>
             <input name="logo_file" type="file" accept="image/*" />
             <span className="hint">อัปโหลดเพื่อเปลี่ยนโลโก้ ถ้าไม่เลือกจะใช้ลิงก์เดิม</span>

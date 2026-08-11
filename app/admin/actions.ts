@@ -489,12 +489,16 @@ export async function deleteVenue(formData: FormData) {
 // ---------- สปอนเซอร์ (sponsors) ----------
 const SPONSOR_TIERS = ["platinum", "gold", "standard"];
 
+const SPONSOR_PLACEMENTS = ["side", "bottom", "both"];
+
 function sponsorPayload(formData: FormData, logoUrl: string | null) {
   const tier = str(formData.get("tier")) || "standard";
+  const placement = str(formData.get("placement")) || "side";
   return {
     name: str(formData.get("name")) || "สปอนเซอร์ใหม่",
     logo_url: logoUrl,
     tier: SPONSOR_TIERS.includes(tier) ? tier : "standard",
+    placement: SPONSOR_PLACEMENTS.includes(placement) ? placement : "side",
     website: str(formData.get("website")),
     active: str(formData.get("active")) !== "false",
   };

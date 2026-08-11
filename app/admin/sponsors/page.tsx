@@ -129,6 +129,14 @@ export default async function AdminSponsorsPage({
             </select>
           </div>
           <div className="field">
+            <label>ตำแหน่งแสดงผล</label>
+            <select name="placement" defaultValue="side">
+              <option value="side">ด้านขวา (คอลัมน์ข้าง)</option>
+              <option value="bottom">ด้านล่าง (แถบเต็มความกว้าง)</option>
+              <option value="both">ทั้งด้านขวาและด้านล่าง</option>
+            </select>
+          </div>
+          <div className="field">
             <label>อัปโหลดโลโก้จากเครื่อง</label>
             <input name="logo_file" type="file" accept="image/*" />
             <span className="hint">เลือกไฟล์รูปได้เลย (เก็บใน Supabase Storage)</span>

@@ -30,6 +30,21 @@ export default async function HomePage() {
   const viewsBySlug = Object.fromEntries(viewsMap);
   const homePlayers = allPlayers.slice(0, 8);
 
+  // เรียงรายการ: แข่งวันนี้ -> ใกล้ปิดรับ -> รับสมัคร -> จบแล้ว
+  const STATUS_ORDER: Record<string, number> = { live: 0, closing: 1, registering: 2, finished: 3, draft: 4 };
+  const sortedTournaments = [...tournaments].sort((a, b) => {
+    const d = (STATUS_ORDER[a.status] ?? 9) - (STATUS_ORDER[b.status] ?? 9);
+    if (d !== 0) return d;
+    // ในสถานะเดียวกัน: จบแล้วเรียงล่าสุดก่อน, ที่เหลือเรียงใกล้ถึงก่อน
+    return a.status === "finished"
+      ? (b.match_start || "").localeCompare(a.match_start || "")
+      : (a.match_start || "").localeCompare(b.match_start || "");
+  });
+
+  // แยกสปอนเซอร์ตามตำแหน่ง: ด้านขวา / ด้านล่าง
+  const sideSponsors = sponsors.filter((s) => (s.placement ?? "side") !== "bottom");
+  const bottomSponsors = sponsors.filter((s) => s.placement === "bottom" || s.placement === "both");
+
   const live = tournaments.find((t) => t.status === "live" && t.live_url);
   const upcoming = tournaments
     .filter((t) => t.status !== "finished")
@@ -117,16 +132,21 @@ export default async function HomePage() {
         <section className="wrap">
           <div className="grid-2">
             <div>
-              <TournamentBrowser tournaments={tournaments} viewsBySlug={viewsBySlug} />
+              <TournamentBrowser tournaments={sortedTournaments} viewsBySlug={viewsBySlug} />
             </div>
 
             <aside>
               <div className="panel">
                 <h4>สปอนเซอร์หลักของเว็บ</h4>
                 <div className="sponsor-grid">
-                  {sponsors.map((s) => (
+                  {sideSponsors.map((s) => (
                     <div key={s.id} className={`sponsor ${s.tier}`}>
-                      {s.name}
+                      {s.logo_url ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={s.logo_url} alt={s.name} />
+                      ) : (
+                        s.name
+                      )}
                     </div>
                   ))}
                 </div>
@@ -197,7 +217,7 @@ export default async function HomePage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {tournaments.map((t) => (
+                  {sortedTournaments.map((t) => (
                     <tr key={t.id}>
                       <td>
                         <Link href={`/tournament/${t.slug}`}>
@@ -218,6 +238,30 @@ export default async function HomePage() {
               </table>
             </div>
           </section>
+
+          {/* สปอนเซอร์ ด้านล่าง (แถบเต็มความกว้าง) */}
+          {bottomSponsors.length > 0 ? (
+            <section className="sponsor-band">
+              <div className="section-title">
+                <h2>สปอนเซอร์ & พาร์ทเนอร์</h2>
+                <Link href="/sponsors" style={{ marginLeft: "auto", fontSize: 14 }} className="muted">
+                  ดูทั้งหมด →
+                </Link>
+              </div>
+              <div className="sponsor-band-grid">
+                {bottomSponsors.map((s) => (
+                  <div key={s.id} className={`sponsor ${s.tier}`}>
+                    {s.logo_url ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={s.logo_url} alt={s.name} />
+                    ) : (
+                      s.name
+                    )}
+                  </div>
+                ))}
+              </div>
+            </section>
+          ) : null}
 
           {/* หานักเตะเดินสาย */}
           {homePlayers.length > 0 ? (
