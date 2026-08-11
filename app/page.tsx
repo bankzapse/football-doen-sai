@@ -1,3 +1,4 @@
+import { Fragment, type ReactNode } from "react";
 import Link from "next/link";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -60,6 +61,126 @@ export default async function HomePage() {
   const openCount = tournaments.filter(
     (t) => t.status === "registering" || t.status === "closing"
   ).length;
+
+  // section หน้าแรกที่จัดลำดับได้ (ควบคุมจาก /admin/settings)
+  const sections: Record<string, ReactNode> = {
+    cta: (
+      <section className="cta-band" id="contact">
+        <div>
+          <h2>อยากจัดรายการแข่ง? ให้เราช่วยประชาสัมพันธ์</h2>
+          <p>
+            ส่งรายละเอียดมาทาง LINE หรือโทรหาเรา — <b>ทีมงานลงข้อมูลให้ครบทุกอย่าง</b>{" "}
+            ทั้งหน้ารายการ ตารางแข่ง ลิงก์ถ่ายทอดสด และหน้า SEO ให้คนค้นเจอทั่วประเทศ
+          </p>
+        </div>
+        <div className="cta-actions">
+          <a href="#" className="btn green">แอด LINE</a>
+          <a href="tel:0646422168" className="btn gold">โทร 064-642-2168</a>
+        </div>
+      </section>
+    ),
+    schedule: (
+      <section className="seo">
+        <div className="section-title">
+          <h2>ตารางแข่งขันทั้งหมด</h2>
+          <span>อัปเดตอัตโนมัติจากหลังบ้าน</span>
+        </div>
+        <div className="tablescroll">
+          <table className="data tnum">
+            <thead>
+              <tr>
+                <th>รายการ</th><th>จังหวัด</th><th>ประเภท</th><th>วันแข่ง</th>
+                <th>รับ (ทีม)</th><th>เงินรางวัลรวม</th><th>สถานะ</th>
+              </tr>
+            </thead>
+            <tbody>
+              {sortedTournaments.map((t) => (
+                <tr key={t.id}>
+                  <td><Link href={`/tournament/${t.slug}`}><b>{t.name}</b></Link></td>
+                  <td>{t.province}</td>
+                  <td>{FORMAT_LABEL[t.format]}</td>
+                  <td>{formatThaiDateRange(t.match_start, t.match_end)}</td>
+                  <td>{t.team_limit}</td>
+                  <td><b>{formatBaht(t.prize_total)}</b></td>
+                  <td>{STATUS_META[t.status].label}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    ),
+    sponsors: bottomSponsors.length > 0 ? (
+      <section className="sponsor-band">
+        <div className="section-title">
+          <h2>สปอนเซอร์ & พาร์ทเนอร์</h2>
+          <Link href="/sponsors" style={{ marginLeft: "auto", fontSize: 14 }} className="muted">ดูทั้งหมด →</Link>
+        </div>
+        <div className="sponsor-band-grid">
+          {bottomSponsors.map((s) => (
+            <div key={s.id} className={`sponsor ${s.tier} size-${s.size ?? "sm"}`}>
+              {s.logo_url ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={s.logo_url} alt={s.name} />
+              ) : (
+                s.name
+              )}
+            </div>
+          ))}
+        </div>
+      </section>
+    ) : null,
+    players: homePlayers.length > 0 ? (
+      <section style={{ margin: "44px 0" }}>
+        <div className="section-title">
+          <h2>หานักเตะเดินสาย</h2>
+          <Link href="/players" style={{ marginLeft: "auto", fontSize: 14 }} className="muted">ดูทั้งหมด →</Link>
+        </div>
+        <div className="home-players">
+          {homePlayers.map((p) => (
+            <Link key={p.id} href={`/players/${p.id}`} className="hp-card">
+              <div className="hp-photo" style={p.photo_url ? { backgroundImage: `url(${p.photo_url})` } : undefined}>
+                {!p.photo_url ? <span className="hp-initial">{p.name.slice(0, 1)}</span> : null}
+                <span className="hp-pos">{POSITION_LABEL[p.position]}</span>
+              </div>
+              <div className="hp-body">
+                <b>{p.name}{p.nickname ? ` (${p.nickname})` : ""}</b>
+                <span className="muted">{[p.province, p.age ? `${p.age} ปี` : null].filter(Boolean).join(" · ")}</span>
+                {p.rate ? <span className="hp-rate">💰 {p.rate}</span> : null}
+                {p.bio ? <span className="hp-bio">{p.bio}</span> : null}
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
+    ) : null,
+    community: recentThreads.length > 0 ? (
+      <section style={{ margin: "44px 0" }}>
+        <div className="section-title">
+          <h2>คุยกันในชุมชน</h2>
+          <Link href="/community" style={{ marginLeft: "auto", fontSize: 14 }} className="muted">ดูทั้งหมด →</Link>
+        </div>
+        <div className="community-feed">
+          {recentThreads.map((t) => (
+            <Link key={t.id} href={`/community/${t.id}`} className="thread-row">
+              <div className="thread-main">
+                <div className="thread-cat">
+                  <span className="cat-tag">{CATEGORY_LABEL[t.category as ThreadCategory]}</span>
+                  {t.province ? <span className="muted"> · {t.province}</span> : null}
+                </div>
+                <div className="thread-title">{t.title}</div>
+                <div className="thread-meta muted">โดย {t.author_name} · {timeAgo(t.created_at)}</div>
+              </div>
+              <div className="thread-replies">
+                <b className="tnum">{t.reply_count}</b>
+                <span>ตอบ</span>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
+    ) : null,
+  };
 
   return (
     <>
@@ -185,158 +306,10 @@ export default async function HomePage() {
             </aside>
           </div>
 
-          {/* contact CTA */}
-          <section className="cta-band" id="contact">
-            <div>
-              <h2>อยากจัดรายการแข่ง? ให้เราช่วยประชาสัมพันธ์</h2>
-              <p>
-                ส่งรายละเอียดมาทาง LINE หรือโทรหาเรา — <b>ทีมงานลงข้อมูลให้ครบทุกอย่าง</b>{" "}
-                ทั้งหน้ารายการ ตารางแข่ง ลิงก์ถ่ายทอดสด และหน้า SEO ให้คนค้นเจอทั่วประเทศ
-              </p>
-            </div>
-            <div className="cta-actions">
-              <a href="#" className="btn green">
-                แอด LINE
-              </a>
-              <a href="tel:0646422168" className="btn gold">
-                โทร 064-642-2168
-              </a>
-            </div>
-          </section>
-
-          {/* SEO schedule table */}
-          <section className="seo">
-            <div className="section-title">
-              <h2>ตารางแข่งขันทั้งหมด</h2>
-              <span>อัปเดตอัตโนมัติจากหลังบ้าน</span>
-            </div>
-            <div className="tablescroll">
-              <table className="data tnum">
-                <thead>
-                  <tr>
-                    <th>รายการ</th>
-                    <th>จังหวัด</th>
-                    <th>ประเภท</th>
-                    <th>วันแข่ง</th>
-                    <th>รับ (ทีม)</th>
-                    <th>เงินรางวัลรวม</th>
-                    <th>สถานะ</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {sortedTournaments.map((t) => (
-                    <tr key={t.id}>
-                      <td>
-                        <Link href={`/tournament/${t.slug}`}>
-                          <b>{t.name}</b>
-                        </Link>
-                      </td>
-                      <td>{t.province}</td>
-                      <td>{FORMAT_LABEL[t.format]}</td>
-                      <td>{formatThaiDateRange(t.match_start, t.match_end)}</td>
-                      <td>{t.team_limit}</td>
-                      <td>
-                        <b>{formatBaht(t.prize_total)}</b>
-                      </td>
-                      <td>{STATUS_META[t.status].label}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </section>
-
-          {/* สปอนเซอร์ ด้านล่าง (แถบเต็มความกว้าง) */}
-          {bottomSponsors.length > 0 ? (
-            <section className="sponsor-band">
-              <div className="section-title">
-                <h2>สปอนเซอร์ & พาร์ทเนอร์</h2>
-                <Link href="/sponsors" style={{ marginLeft: "auto", fontSize: 14 }} className="muted">
-                  ดูทั้งหมด →
-                </Link>
-              </div>
-              <div className="sponsor-band-grid">
-                {bottomSponsors.map((s) => (
-                  <div key={s.id} className={`sponsor ${s.tier} size-${s.size ?? "sm"}`}>
-                    {s.logo_url ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={s.logo_url} alt={s.name} />
-                    ) : (
-                      s.name
-                    )}
-                  </div>
-                ))}
-              </div>
-            </section>
-          ) : null}
-
-          {/* หานักเตะเดินสาย */}
-          {homePlayers.length > 0 ? (
-            <section style={{ margin: "44px 0" }}>
-              <div className="section-title">
-                <h2>หานักเตะเดินสาย</h2>
-                <Link href="/players" style={{ marginLeft: "auto", fontSize: 14 }} className="muted">
-                  ดูทั้งหมด →
-                </Link>
-              </div>
-              <div className="home-players">
-                {homePlayers.map((p) => (
-                  <Link key={p.id} href={`/players/${p.id}`} className="hp-card">
-                    <div
-                      className="hp-photo"
-                      style={p.photo_url ? { backgroundImage: `url(${p.photo_url})` } : undefined}
-                    >
-                      {!p.photo_url ? <span className="hp-initial">{p.name.slice(0, 1)}</span> : null}
-                      <span className="hp-pos">{POSITION_LABEL[p.position]}</span>
-                    </div>
-                    <div className="hp-body">
-                      <b>
-                        {p.name}
-                        {p.nickname ? ` (${p.nickname})` : ""}
-                      </b>
-                      <span className="muted">
-                        {[p.province, p.age ? `${p.age} ปี` : null].filter(Boolean).join(" · ")}
-                      </span>
-                      {p.rate ? <span className="hp-rate">💰 {p.rate}</span> : null}
-                      {p.bio ? <span className="hp-bio">{p.bio}</span> : null}
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            </section>
-          ) : null}
-
-          {/* คุยกันในชุมชน — กระทู้ที่มีความเคลื่อนไหวล่าสุด */}
-          {recentThreads.length > 0 ? (
-            <section style={{ margin: "44px 0" }}>
-              <div className="section-title">
-                <h2>คุยกันในชุมชน</h2>
-                <Link href="/community" style={{ marginLeft: "auto", fontSize: 14 }} className="muted">
-                  ดูทั้งหมด →
-                </Link>
-              </div>
-              <div className="community-feed">
-                {recentThreads.map((t) => (
-                  <Link key={t.id} href={`/community/${t.id}`} className="thread-row">
-                    <div className="thread-main">
-                      <div className="thread-cat">
-                        <span className="cat-tag">{CATEGORY_LABEL[t.category as ThreadCategory]}</span>
-                        {t.province ? <span className="muted"> · {t.province}</span> : null}
-                      </div>
-                      <div className="thread-title">{t.title}</div>
-                      <div className="thread-meta muted">
-                        โดย {t.author_name} · {timeAgo(t.created_at)}
-                      </div>
-                    </div>
-                    <div className="thread-replies">
-                      <b className="tnum">{t.reply_count}</b>
-                      <span>ตอบ</span>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            </section>
-          ) : null}
+          {/* section หน้าแรกตามลำดับที่ตั้งใน /admin/settings */}
+          {settings.sectionOrder.map((key) => (
+            <Fragment key={key}>{sections[key] ?? null}</Fragment>
+          ))}
         </section>
       </main>
 

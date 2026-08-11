@@ -1,6 +1,10 @@
 import Link from "next/link";
-import { getSiteSettings } from "@/lib/settings";
-import { updateSiteSettings } from "@/app/admin/actions";
+import { getSiteSettings, HOME_SECTIONS } from "@/lib/settings";
+import { updateSiteSettings, moveSection } from "@/app/admin/actions";
+
+const SECTION_LABEL: Record<string, string> = Object.fromEntries(
+  HOME_SECTIONS.map((s) => [s.key, s.label])
+);
 
 export default async function AdminSettingsPage({
   searchParams,
@@ -56,6 +60,36 @@ export default async function AdminSettingsPage({
           </div>
         </div>
       </form>
+
+      <h3 style={{ fontSize: 16, margin: "28px 0 10px" }}>ลำดับ section หน้าแรก</h3>
+      <div className="callout">จัดลำดับการแสดง section ในหน้าแรกด้วยปุ่ม ↑ / ↓ (section ที่ไม่มีข้อมูลจะซ่อนอัตโนมัติ)</div>
+      <div className="tablescroll">
+        <table className="atable">
+          <thead>
+            <tr><th>ลำดับ</th><th>Section</th><th>เลื่อน</th></tr>
+          </thead>
+          <tbody>
+            {s.sectionOrder.map((key, i) => (
+              <tr key={key}>
+                <td className="tnum">{i + 1}</td>
+                <td>{SECTION_LABEL[key] ?? key}</td>
+                <td style={{ display: "flex", gap: 6 }}>
+                  <form action={moveSection}>
+                    <input type="hidden" name="key" value={key} />
+                    <input type="hidden" name="dir" value="up" />
+                    <button className="rowbtn" disabled={i === 0} aria-label="เลื่อนขึ้น">↑</button>
+                  </form>
+                  <form action={moveSection}>
+                    <input type="hidden" name="key" value={key} />
+                    <input type="hidden" name="dir" value="down" />
+                    <button className="rowbtn" disabled={i === s.sectionOrder.length - 1} aria-label="เลื่อนลง">↓</button>
+                  </form>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </>
   );
 }

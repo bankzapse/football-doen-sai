@@ -16,5 +16,6 @@ grant all on site_settings to service_role;
 -- ค่าเริ่มต้น: หน้าแรกโชว์ 2 คอลัมน์ / ทุกแถว (0 = ไม่จำกัด)
 insert into site_settings (key, value) values
   ('home_grid_columns', '2'),
-  ('home_grid_rows', '0')
+  ('home_grid_rows', '0'),
+  ('home_section_order', 'cta,schedule,sponsors,players,community')
 on conflict (key) do nothing;

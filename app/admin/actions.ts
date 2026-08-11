@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { getSupabaseAdmin } from "@/lib/supabase";
 import { getCurrentUser } from "@/lib/supabase/server";
 import { savePlayerHistoryFromForm } from "@/lib/players";
+import { normalizeSectionOrder, DEFAULT_SECTION_ORDER } from "@/lib/settings";
 
 function num(v: FormDataEntryValue | null): number {
   const n = Number(String(v ?? "").replace(/[^0-9.]/g, ""));
@@ -574,6 +575,38 @@ export async function updateSiteSettings(formData: FormData) {
   revalidatePath("/");
   revalidatePath("/admin/settings");
   redirect("/admin/settings?ok=1");
+}
+
+/** เลื่อนลำดับ section หน้าแรกขึ้น/ลง */
+export async function moveSection(formData: FormData) {
+  await requireUser("/admin/settings");
+  const sb = getSupabaseAdmin();
+  const key = str(formData.get("key"));
+  const dir = str(formData.get("dir"));
+  if (!sb || !key) redirect("/admin/settings");
+
+  const { data } = await sb!
+    .from("site_settings")
+    .select("value")
+    .eq("key", "home_section_order")
+    .maybeSingle();
+  const current = (data?.value || DEFAULT_SECTION_ORDER.join(","))
+    .split(",")
+    .map((s: string) => s.trim())
+    .filter(Boolean);
+  const order = normalizeSectionOrder(current);
+
+  const idx = order.indexOf(key);
+  const swap = dir === "up" ? idx - 1 : idx + 1;
+  if (idx < 0 || swap < 0 || swap >= order.length) redirect("/admin/settings");
+  [order[idx], order[swap]] = [order[swap], order[idx]];
+
+  await sb!
+    .from("site_settings")
+    .upsert([{ key: "home_section_order", value: order.join(",") }], { onConflict: "key" });
+  revalidatePath("/");
+  revalidatePath("/admin/settings");
+  redirect("/admin/settings");
 }
 
 /** เลื่อนลำดับสปอนเซอร์ขึ้น/ลง ภายใน section (side/bottom) */
