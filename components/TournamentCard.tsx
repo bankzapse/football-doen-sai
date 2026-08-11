@@ -65,8 +65,9 @@ export default function TournamentCard({ t, views = 0 }: { t: Tournament; views?
         <Link href={`/tournament/${t.slug}`} className="btn green">
           {finished ? "ดูผลการแข่งขัน" : "รายละเอียด / สมัคร"}
         </Link>
-        {t.live_url ? (
-          <a href={t.live_url} target="_blank" rel="noreferrer" className="btn ghost">
+        {t.status === "live" && t.live_url ? (
+          <a href={t.live_url} target="_blank" rel="noreferrer" className="btn live-btn">
+            <span className="dot" />
             ดูสด
           </a>
         ) : null}

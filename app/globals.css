@@ -567,7 +567,25 @@ select.sel {
 .card .foot .btn {
   flex: 1;
   font-size: 13px;
-  padding: 9px;
+  padding: 9px 10px;
+  white-space: nowrap;
+}
+/* ปุ่มดูสด — เฉพาะรายการแข่งวันนี้ (แดง มีจุดกระพริบ) กระชับ */
+.card .foot .btn.live-btn {
+  flex: none;
+  background: var(--live);
+  color: #fff;
+  border-color: transparent;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 14px;
+  box-shadow: 0 8px 18px -10px color-mix(in srgb, var(--live) 85%, transparent);
+}
+.card .foot .btn.live-btn .dot {
+  width: 7px;
+  height: 7px;
+  background: #fff;
 }
 
 /* ---------- rail ---------- */
