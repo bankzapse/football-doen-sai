@@ -7,7 +7,7 @@ export default function Header() {
       <div className="wrap header-inner">
         <Link href="/" className="brand">
           <Logo size={38} />
-          <span>
+          <span className="brand-name">
             FDS <span className="hi">Cup</span>
             <small>FOOTBALL เดินสาย</small>
           </span>
@@ -23,7 +23,8 @@ export default function Header() {
         </nav>
         <div className="header-cta">
           <Link href="/#contact" className="btn gold">
-            อยากจัดรายการ? ติดต่อเรา
+            <span className="cta-full">อยากจัดรายการ? ติดต่อเรา</span>
+            <span className="cta-short">ติดต่อเรา</span>
           </Link>
         </div>
       </div>

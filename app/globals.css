@@ -2117,3 +2117,61 @@ a.lmatch:hover { color: var(--pitch); }
   height: 100%;
   object-fit: cover;
 }
+
+/* ==================== ปุ่มดูสด (เด่นขึ้น + เรืองแสงกระพริบ) ==================== */
+.card .foot .btn.live-btn {
+  background: linear-gradient(135deg, #ff4747, #e11414);
+  color: #fff;
+  font-weight: 800;
+  border-color: transparent;
+  animation: liveGlow 1.8s ease-in-out infinite;
+}
+@keyframes liveGlow {
+  0% { box-shadow: 0 6px 16px -8px rgba(221, 20, 20, 0.85), 0 0 0 0 rgba(255, 71, 71, 0.55); }
+  70% { box-shadow: 0 6px 16px -8px rgba(221, 20, 20, 0.85), 0 0 0 9px rgba(255, 71, 71, 0); }
+  100% { box-shadow: 0 6px 16px -8px rgba(221, 20, 20, 0.85), 0 0 0 0 rgba(255, 71, 71, 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .card .foot .btn.live-btn { animation: none; }
+}
+
+/* ==================== RESPONSIVE: มือถือ ==================== */
+.cta-short { display: none; }
+
+@media (max-width: 560px) {
+  /* header กระชับ */
+  .header-inner { gap: 10px; height: 60px; }
+  .brand { font-size: 16px; gap: 8px; }
+  .brand .logo { width: 32px; height: 32px; }
+  .brand-name { white-space: nowrap; }
+  .brand-name small { display: none; }
+  .cta-full { display: none; }
+  .cta-short { display: inline; }
+  .header-cta .btn.gold { padding: 9px 13px; font-size: 13px; }
+
+  /* hero */
+  .hero { padding: 24px 0 4px; }
+  .hero h1 { font-size: 27px; }
+  .hero .sub { font-size: 14.5px; margin-bottom: 18px; }
+
+  /* stat cards */
+  .stat-cards { gap: 10px; }
+  .stat-card { padding: 12px 13px; gap: 10px; }
+  .stat-ic { width: 38px; height: 38px; font-size: 17px; }
+  .stat-body b { font-size: 20px; }
+  .stat-body span { font-size: 11px; }
+
+  /* live strip: ปุ่มเต็มความกว้าง */
+  .live-strip { padding: 14px; gap: 12px; }
+  .live-actions { width: 100%; margin-left: 0; }
+  .live-actions .btn { flex: 1; }
+
+  /* section spacing กระชับ */
+  .cta-band { padding: 20px; }
+  .cta-band h2 { font-size: 20px; }
+  .seo { padding: 16px; }
+  .sponsor-band, .home-players, .community-feed { margin-top: 8px; }
+
+  /* หัวข้อ section */
+  .section-title h2 { font-size: 18px; }
+}
