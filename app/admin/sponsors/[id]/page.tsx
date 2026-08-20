@@ -79,6 +79,27 @@ export default async function EditSponsorPage({
             <input name="website" defaultValue={s.website ?? ""} placeholder="https://..." />
           </div>
           <div className="field">
+            <label>แพ็กเกจ (รอบชำระ)</label>
+            <select name="plan_months" defaultValue={s.plan_months ? String(s.plan_months) : ""}>
+              <option value="">— ไม่ระบุ —</option>
+              <option value="1">รายเดือน (1 เดือน)</option>
+              <option value="3">3 เดือน</option>
+              <option value="6">6 เดือน</option>
+              <option value="12">รายปี (12 เดือน)</option>
+            </select>
+          </div>
+          <div className="field">
+            <label>วันเริ่ม</label>
+            <input name="start_date" type="date" defaultValue={s.start_date ?? ""} />
+            <span className="hint">
+              {s.end_date ? `หมดอายุ: ${s.end_date}` : "ระบบจะคำนวณวันหมดอายุให้อัตโนมัติ"}
+            </span>
+          </div>
+          <div className="field">
+            <label>ค่าลง (บาท)</label>
+            <input name="price" inputMode="numeric" defaultValue={s.price ?? ""} placeholder="เช่น 3,000" />
+          </div>
+          <div className="field">
             <label>การแสดงผล</label>
             <select name="active" defaultValue={String(s.active)}>
               <option value="true">แสดงบนเว็บ</option>

@@ -2175,3 +2175,58 @@ a.lmatch:hover { color: var(--pitch); }
   /* หัวข้อ section */
   .section-title h2 { font-size: 18px; }
 }
+
+/* ---------- แพ็กเกจสปอนเซอร์ ---------- */
+.pkg-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 14px;
+}
+.pkg-card {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px 16px;
+  text-align: center;
+  box-shadow: var(--shadow);
+}
+.pkg-card.featured {
+  border-color: color-mix(in srgb, var(--gold) 50%, var(--border));
+  background: linear-gradient(160deg, var(--gold-soft), var(--surface) 75%);
+}
+.pkg-tag {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--gold);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 2px 12px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.pkg-name {
+  font-family: var(--display);
+  font-size: 20px;
+  font-weight: 900;
+}
+.pkg-months {
+  color: var(--pitch);
+  font-weight: 800;
+  font-size: 14px;
+  margin-top: 2px;
+}
+.pkg-note {
+  font-size: 12px;
+  margin-top: 8px;
+}
+.pkg-price {
+  font-size: 13px;
+  font-weight: 700;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--border);
+}

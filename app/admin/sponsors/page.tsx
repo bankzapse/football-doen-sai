@@ -16,6 +16,38 @@ const PLACEMENT_LABEL: Record<string, string> = {
   both: "ทั้งสอง",
 };
 
+export const PLAN_LABEL: Record<number, string> = {
+  1: "รายเดือน",
+  3: "3 เดือน",
+  6: "6 เดือน",
+  12: "รายปี",
+};
+
+function thaiDate(d: string | null | undefined): string {
+  if (!d) return "-";
+  const dt = new Date(d + "T00:00:00");
+  const m = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
+  return `${dt.getDate()} ${m[dt.getMonth()]} ${(dt.getFullYear() + 543) % 100}`;
+}
+
+/** แสดงแพ็กเกจ + วันหมดอายุ + สถานะเหลือ/หมดอายุ */
+function BillingCell({ s }: { s: Sponsor }) {
+  if (!s.plan_months || !s.end_date) return <span className="muted">-</span>;
+  const days = Math.ceil((new Date(s.end_date + "T00:00:00").getTime() - Date.now()) / 86400000);
+  const expired = days < 0;
+  const soon = !expired && days <= 7;
+  const color = expired ? "var(--live)" : soon ? "var(--gold)" : "var(--pitch)";
+  return (
+    <div style={{ lineHeight: 1.4 }}>
+      <div style={{ fontWeight: 700 }}>{PLAN_LABEL[s.plan_months] ?? `${s.plan_months} เดือน`}</div>
+      <div className="muted" style={{ fontSize: 12 }}>หมดอายุ {thaiDate(s.end_date)}</div>
+      <div style={{ fontSize: 12, fontWeight: 700, color }}>
+        {expired ? "หมดอายุแล้ว" : `เหลือ ${days} วัน`}
+      </div>
+    </div>
+  );
+}
+
 /** ตารางสปอนเซอร์ 1 section พร้อมปุ่มเลื่อนลำดับ ↑/↓ */
 function SponsorSection({ title, group, list }: { title: string; group: "side" | "bottom"; list: Sponsor[] }) {
   return (
@@ -32,6 +64,7 @@ function SponsorSection({ title, group, list }: { title: string; group: "side" |
               <th>ชื่อ</th>
               <th>ระดับ</th>
               <th>ตำแหน่ง</th>
+              <th>แพ็กเกจ / หมดอายุ</th>
               <th>สถานะ</th>
               <th>จัดการ</th>
             </tr>
@@ -62,6 +95,7 @@ function SponsorSection({ title, group, list }: { title: string; group: "side" |
                 </td>
                 <td>{TIER_LABEL[s.tier] ?? s.tier}</td>
                 <td>{PLACEMENT_LABEL[s.placement ?? "side"]}</td>
+                <td><BillingCell s={s} /></td>
                 <td>
                   <span className="pill" style={{ background: s.active ? "var(--surface-3)" : "transparent", color: s.active ? "var(--pitch)" : "var(--muted)", border: "1px solid var(--border)" }}>
                     {s.active ? "แสดง" : "ซ่อน"}
@@ -82,7 +116,7 @@ function SponsorSection({ title, group, list }: { title: string; group: "side" |
               </tr>
             ))}
             {list.length === 0 ? (
-              <tr><td colSpan={6} className="muted">ยังไม่มีสปอนเซอร์ในตำแหน่งนี้</td></tr>
+              <tr><td colSpan={7} className="muted">ยังไม่มีสปอนเซอร์ในตำแหน่งนี้</td></tr>
             ) : null}
           </tbody>
         </table>
@@ -182,6 +216,25 @@ export default async function AdminSponsorsPage({
           <div className="field">
             <label>เว็บไซต์</label>
             <input name="website" placeholder="https://..." />
+          </div>
+          <div className="field">
+            <label>แพ็กเกจ (รอบชำระ)</label>
+            <select name="plan_months" defaultValue="">
+              <option value="">— ไม่ระบุ —</option>
+              <option value="1">รายเดือน (1 เดือน)</option>
+              <option value="3">3 เดือน</option>
+              <option value="6">6 เดือน</option>
+              <option value="12">รายปี (12 เดือน)</option>
+            </select>
+          </div>
+          <div className="field">
+            <label>วันเริ่ม</label>
+            <input name="start_date" type="date" />
+            <span className="hint">ระบบจะคำนวณวันหมดอายุให้อัตโนมัติ</span>
+          </div>
+          <div className="field">
+            <label>ค่าลง (บาท)</label>
+            <input name="price" inputMode="numeric" placeholder="เช่น 3,000" />
           </div>
           <div className="field">
             <label>การแสดงผล</label>

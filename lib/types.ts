@@ -24,6 +24,10 @@ export interface Sponsor {
   tier: "platinum" | "gold" | "standard";
   placement?: "side" | "bottom" | "both";
   size?: "sm" | "md" | "lg";
+  plan_months?: number | null;
+  start_date?: string | null;
+  end_date?: string | null;
+  price?: number | null;
   website: string | null;
   active: boolean;
 }

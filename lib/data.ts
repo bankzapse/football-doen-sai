@@ -116,7 +116,9 @@ export async function getSponsors(): Promise<Sponsor[]> {
     .order("sort", { ascending: true })
     .order("name", { ascending: true });
   if (error || !data) return seedSponsors.filter((s) => s.active);
-  return data as unknown as Sponsor[];
+  // ซ่อนสปอนเซอร์ที่หมดอายุแล้ว (end_date < วันนี้) — resilient ถ้ายังไม่มีคอลัมน์
+  const today = new Date().toISOString().slice(0, 10);
+  return (data as unknown as Sponsor[]).filter((s) => !s.end_date || s.end_date >= today);
 }
 
 /** สปอนเซอร์ทั้งหมดสำหรับหลังบ้าน (รวมที่ซ่อนอยู่) — ต้องใช้ service role อ่านตัวที่ active=false */

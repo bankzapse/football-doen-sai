@@ -492,17 +492,35 @@ const SPONSOR_TIERS = ["platinum", "gold", "standard"];
 
 const SPONSOR_PLACEMENTS = ["side", "bottom", "both"];
 const SPONSOR_SIZES = ["sm", "md", "lg"];
+const SPONSOR_PLANS = [1, 3, 6, 12];
+
+/** บวกเดือนให้วันที่ (YYYY-MM-DD) แล้วคืน YYYY-MM-DD */
+function addMonths(dateStr: string | null, n: number | null): string | null {
+  if (!dateStr || !n) return null;
+  const d = new Date(dateStr + "T00:00:00");
+  if (isNaN(d.getTime())) return null;
+  d.setMonth(d.getMonth() + n);
+  return d.toISOString().slice(0, 10);
+}
 
 function sponsorPayload(formData: FormData, logoUrl: string | null) {
   const tier = str(formData.get("tier")) || "standard";
   const placement = str(formData.get("placement")) || "side";
   const size = str(formData.get("size")) || "sm";
+  const planRaw = numOrNull(formData.get("plan_months"));
+  const plan = planRaw && SPONSOR_PLANS.includes(planRaw) ? planRaw : null;
+  const startDate = str(formData.get("start_date"));
+  const endDate = addMonths(startDate, plan);
   return {
     name: str(formData.get("name")) || "สปอนเซอร์ใหม่",
     logo_url: logoUrl,
     tier: SPONSOR_TIERS.includes(tier) ? tier : "standard",
     placement: SPONSOR_PLACEMENTS.includes(placement) ? placement : "side",
     size: SPONSOR_SIZES.includes(size) ? size : "sm",
+    plan_months: plan,
+    start_date: startDate,
+    end_date: endDate,
+    price: numOrNull(formData.get("price")),
     website: str(formData.get("website")),
     active: str(formData.get("active")) !== "false",
   };
