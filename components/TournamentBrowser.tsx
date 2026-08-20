@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import type { Tournament } from "@/lib/types";
 import TournamentCard from "./TournamentCard";
+import Icon3D from "@/components/Icon3D";
 
 type StatusFilter = "all" | "registering" | "closing" | "live";
 
@@ -48,7 +49,7 @@ export default function TournamentBrowser({
     <>
       <div className="filters">
         <div className="search">
-          <span aria-hidden>🔎</span>
+          <span aria-hidden><Icon3D name="search" size={18} /></span>
           <input
             value={q}
             onChange={(e) => setQ(e.target.value)}

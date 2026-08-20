@@ -4,6 +4,15 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { getThreads, CATEGORIES, CATEGORY_LABEL, type ThreadCategory } from "@/lib/community";
 import { timeAgo } from "@/lib/format";
+import Icon3D from "@/components/Icon3D";
+
+const CAT_ICON: Record<string, string> = {
+  find_opponent: "handshake",
+  join_tournament: "trophy",
+  find_player: "shoe",
+  buy_sell: "shirt",
+  general: "chat",
+};
 
 export const metadata: Metadata = {
   title: "ชุมชนเดินสาย — หาคู่แข่ง หาทีม หานักเตะ",
@@ -49,7 +58,7 @@ export default async function CommunityPage({
               href={`/community?cat=${c.key}`}
               className={`chip ${active === c.key ? "on" : ""}`}
             >
-              {c.emoji} {c.label}
+              <Icon3D name={CAT_ICON[c.key] ?? "chat"} size={16} /> {c.label}
             </Link>
           ))}
         </div>

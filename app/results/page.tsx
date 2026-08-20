@@ -4,6 +4,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { getFinishedTournaments } from "@/lib/data";
 import { formatThaiDateRange, formatBaht, FORMAT_LABEL } from "@/lib/format";
+import Icon3D from "@/components/Icon3D";
 
 export const metadata: Metadata = {
   title: "ผลการแข่งขัน",
@@ -40,7 +41,7 @@ export default async function ResultsPage() {
                 </div>
                 <h3>{t.name}</h3>
                 <div className="champ-row">
-                  <span className="trophy">🏆</span>
+                  <span className="trophy"><Icon3D name="trophy" size={26} /></span>
                   <div>
                     <div className="muted" style={{ fontSize: 11 }}>แชมป์</div>
                     <b>{t.champion || "-"}</b>

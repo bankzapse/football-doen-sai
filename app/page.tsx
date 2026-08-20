@@ -8,6 +8,7 @@ import { getTournamentViews, getSiteViewStats } from "@/lib/stats";
 import { getRecentActiveThreads, CATEGORY_LABEL, type ThreadCategory } from "@/lib/community";
 import { getApprovedPlayers, POSITION_LABEL } from "@/lib/players";
 import { getSiteSettings } from "@/lib/settings";
+import Icon3D from "@/components/Icon3D";
 import {
   formatBaht,
   formatThaiDateRange,
@@ -146,7 +147,7 @@ export default async function HomePage() {
               <div className="hp-body">
                 <b>{p.name}{p.nickname ? ` (${p.nickname})` : ""}</b>
                 <span className="muted">{[p.province, p.age ? `${p.age} ปี` : null].filter(Boolean).join(" · ")}</span>
-                {p.rate ? <span className="hp-rate">💰 {p.rate}</span> : null}
+                {p.rate ? <span className="hp-rate"><Icon3D name="money" size={15} /> {p.rate}</span> : null}
                 {p.bio ? <span className="hp-bio">{p.bio}</span> : null}
               </div>
             </Link>
@@ -197,28 +198,28 @@ export default async function HomePage() {
           </p>
           <div className="stat-cards">
             <div className="stat-card accent-green">
-              <div className="stat-ic">📋</div>
+              <div className="stat-ic"><Icon3D name="clipboard" size={28} /></div>
               <div className="stat-body">
                 <b className="tnum">{openCount}</b>
                 <span>รายการที่กำลังรับสมัคร</span>
               </div>
             </div>
             <div className="stat-card accent-teal">
-              <div className="stat-ic">📍</div>
+              <div className="stat-ic"><Icon3D name="pushpin" size={28} /></div>
               <div className="stat-body">
                 <b className="tnum">{provinceCount}</b>
                 <span>จังหวัดทั่วไทย</span>
               </div>
             </div>
             <div className="stat-card accent-gold">
-              <div className="stat-ic">🏆</div>
+              <div className="stat-ic"><Icon3D name="trophy" size={28} /></div>
               <div className="stat-body">
                 <b className="tnum gold-text">{formatBaht(totalPrize)}</b>
                 <span>เงินรางวัลรวม</span>
               </div>
             </div>
             <div className="stat-card accent-slate">
-              <div className="stat-ic">👁</div>
+              <div className="stat-ic"><Icon3D name="eye" size={28} /></div>
               <div className="stat-body">
                 <b className="tnum">{(siteStats?.total ?? 0).toLocaleString("th-TH")}</b>
                 <span>ยอดเข้าชมเว็บ</span>

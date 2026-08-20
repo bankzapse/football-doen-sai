@@ -10,6 +10,7 @@ import {
   FOOT_LABEL,
 } from "@/lib/players";
 import PlayerProvinceFilter from "@/components/PlayerProvinceFilter";
+import Icon3D from "@/components/Icon3D";
 
 export const metadata: Metadata = {
   title: "หานักเตะเดินสาย",
@@ -117,11 +118,11 @@ export default async function PlayersPage({
                       .join(" · ")}
                   </div>
                   {p.rate ? (
-                    <div className="fp-rate">💰 ค่าตัว/เรท: {p.rate}</div>
+                    <div className="fp-rate"><Icon3D name="money" size={15} /> ค่าตัว/เรท: {p.rate}</div>
                   ) : null}
                   {p.bio ? <p className="fp-bio">{p.bio}</p> : null}
                   {p.contact ? (
-                    <div className="fp-contact">📞 {p.contact}</div>
+                    <div className="fp-contact"><Icon3D name="phone" size={15} /> {p.contact}</div>
                   ) : (
                     <div className="muted" style={{ fontSize: 13 }}>ไม่ระบุช่องทางติดต่อ</div>
                   )}

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import Icon3D from "@/components/Icon3D";
 import { getTournamentBySlug, getTournaments, getMatches, getStandings } from "@/lib/data";
 import { getThreadsForTournament, CATEGORY_LABEL, type ThreadCategory } from "@/lib/community";
 import { getPlayersByProvince, POSITION_LABEL, FOOT_LABEL } from "@/lib/players";
@@ -268,27 +269,27 @@ export default async function TournamentPage({
             {t.champion ? (
               <div className="podium">
                 <div className="podium-item gold">
-                  <span className="medal">🏆</span>
+                  <span className="medal"><Icon3D name="trophy" size={40} /></span>
                   <div className="muted">ชนะเลิศ</div>
                   <b>{t.champion}</b>
                 </div>
                 {t.runner_up ? (
                   <div className="podium-item silver">
-                    <span className="medal">🥈</span>
+                    <span className="medal"><Icon3D name="medal2" size={40} /></span>
                     <div className="muted">รองชนะเลิศ</div>
                     <b>{t.runner_up}</b>
                   </div>
                 ) : null}
                 {t.third_place ? (
                   <div className="podium-item bronze">
-                    <span className="medal">🥉</span>
+                    <span className="medal"><Icon3D name="medal3" size={40} /></span>
                     <div className="muted">อันดับ 3</div>
                     <b>{t.third_place}</b>
                   </div>
                 ) : null}
                 {t.top_scorer ? (
                   <div className="podium-item">
-                    <span className="medal">👟</span>
+                    <span className="medal"><Icon3D name="shoe" size={40} /></span>
                     <div className="muted">ดาวซัลโว</div>
                     <b>{t.top_scorer}</b>
                   </div>
@@ -385,8 +386,8 @@ export default async function TournamentPage({
                         .filter(Boolean)
                         .join(" · ")}
                     </div>
-                    {p.rate ? <div className="fp-rate">💰 {p.rate}</div> : null}
-                    {p.contact ? <div className="fp-contact">📞 {p.contact}</div> : null}
+                    {p.rate ? <div className="fp-rate"><Icon3D name="money" size={15} /> {p.rate}</div> : null}
+                    {p.contact ? <div className="fp-contact"><Icon3D name="phone" size={15} /> {p.contact}</div> : null}
                   </div>
                 </div>
               ))}

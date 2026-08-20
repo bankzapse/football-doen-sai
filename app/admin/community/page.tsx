@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getThreadsAdmin, CATEGORY_LABEL, type ThreadCategory } from "@/lib/community";
 import { deleteThread, togglePinThread, approveThread } from "@/app/admin/actions";
 import { timeAgo } from "@/lib/format";
+import Icon3D from "@/components/Icon3D";
 
 export default async function AdminCommunityPage() {
   const threads = await getThreadsAdmin();
@@ -40,7 +41,7 @@ export default async function AdminCommunityPage() {
                 <tr key={t.id} style={pending ? { background: "color-mix(in srgb, var(--gold) 8%, transparent)" } : undefined}>
                   <td style={{ maxWidth: 320 }}>
                     <Link href={`/community/${t.id}`}>
-                      {t.pinned ? "📌 " : ""}
+                      {t.pinned ? <Icon3D name="pushpin" size={14} /> : null}{t.pinned ? " " : ""}
                       {t.title}
                     </Link>
                     <div className="muted" style={{ fontSize: 12, whiteSpace: "normal" }}>

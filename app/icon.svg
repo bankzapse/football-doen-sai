@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="fdsbg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1fbf5a"/><stop offset="1" stop-color="#0a6a2c"/>
+    </linearGradient>
+    <linearGradient id="fdsgl" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity=".26"/><stop offset=".55" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="fdsgold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffe6a0"/><stop offset="1" stop-color="#e0a52a"/>
+    </linearGradient>
+  </defs>
+  <rect x="16" y="16" width="480" height="480" rx="116" fill="url(#fdsbg)"/>
+  <rect x="16" y="16" width="480" height="480" rx="116" fill="url(#fdsgl)"/>
+  <text x="256" y="322" text-anchor="middle" font-family="'Arial Black',Helvetica,Arial,sans-serif" font-weight="900" font-size="150" letter-spacing="-4" fill="#ffffff">FDS</text>
+  <rect x="176" y="352" width="160" height="14" rx="7" fill="url(#fdsgold)"/>
+</svg>

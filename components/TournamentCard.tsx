@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Icon3D from "@/components/Icon3D";
 import type { Tournament } from "@/lib/types";
 import {
   formatBaht,
@@ -28,7 +29,7 @@ export default function TournamentCard({ t, views = 0 }: { t: Tournament; views?
           <span className="tag type">{FORMAT_LABEL[t.format]}</span>
         </div>
         {views > 0 ? (
-          <span className="views-badge tnum">👁 {views.toLocaleString("th-TH")}</span>
+          <span className="views-badge tnum"><Icon3D name="eye" size={14} /> {views.toLocaleString("th-TH")}</span>
         ) : null}
         <h3>{t.name}</h3>
       </Link>

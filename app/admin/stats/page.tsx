@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getSiteViewStats, getTournamentViews } from "@/lib/stats";
 import { getAllTournamentsAdmin } from "@/lib/data";
 import { isSupabaseConfigured } from "@/lib/supabase";
+import Icon3D from "@/components/Icon3D";
 
 export const dynamic = "force-dynamic";
 
@@ -64,7 +65,7 @@ export default async function AdminStatsPage() {
                   <Link href={`/tournament/${r.slug}`}>{r.name}</Link>
                 </td>
                 <td className="tnum" style={{ textAlign: "right" }}>
-                  👁 {r.views.toLocaleString("th-TH")}
+                  <Icon3D name="eye" size={15} /> {r.views.toLocaleString("th-TH")}
                 </td>
               </tr>
             ))}
