@@ -1,17 +1,18 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="122 152 780 780">
   <defs>
-    <linearGradient id="fdsbg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#1fbf5a"/><stop offset="1" stop-color="#0a6a2c"/>
-    </linearGradient>
-    <linearGradient id="fdsgl" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#ffffff" stop-opacity=".26"/><stop offset=".55" stop-color="#ffffff" stop-opacity="0"/>
-    </linearGradient>
-    <linearGradient id="fdsgold" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#ffe6a0"/><stop offset="1" stop-color="#e0a52a"/>
-    </linearGradient>
+    <linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2ecb64"/><stop offset=".5" stop-color="#0e7a34"/><stop offset="1" stop-color="#064e21"/></linearGradient>
+    <linearGradient id="go" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff1c2"/><stop offset=".45" stop-color="#f0c04e"/><stop offset="1" stop-color="#b8791a"/></linearGradient>
+    <linearGradient id="gb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe9a8"/><stop offset="1" stop-color="#d99a26"/></linearGradient>
   </defs>
-  <rect x="16" y="16" width="480" height="480" rx="116" fill="url(#fdsbg)"/>
-  <rect x="16" y="16" width="480" height="480" rx="116" fill="url(#fdsgl)"/>
-  <text x="256" y="322" text-anchor="middle" font-family="'Arial Black',Helvetica,Arial,sans-serif" font-weight="900" font-size="150" letter-spacing="-4" fill="#ffffff">FDS</text>
-  <rect x="176" y="352" width="160" height="14" rx="7" fill="url(#fdsgold)"/>
+  <path d="M256,270 H768 V520 C768,662 662,762 512,860 C362,762 256,662 256,520 Z" fill="url(#go)"/>
+  <path d="M256,270 H768 V520 C768,662 662,762 512,860 C362,762 256,662 256,520 Z" fill="url(#g)" transform="translate(512,565) scale(0.93) translate(-512,-565)"/>
+  <path d="M256,270 H768 V520 C768,662 662,762 512,860 C362,762 256,662 256,520 Z" fill="none" stroke="url(#gb)" stroke-width="6" opacity="0.9" transform="translate(512,565) scale(0.86) translate(-512,-565)"/>
+  <path d="M0,-52 L12.9,-17.8 L49.5,-16.1 L20.9,6.8 L30.6,42.1 L0,22 L-30.6,42.1 L-20.9,6.8 L-49.5,-16.1 L-12.9,-17.8 Z" transform="translate(432,214)" fill="url(#go)" stroke="#9a6410" stroke-width="4"/>
+  <path d="M0,-52 L12.9,-17.8 L49.5,-16.1 L20.9,6.8 L30.6,42.1 L0,22 L-30.6,42.1 L-20.9,6.8 L-49.5,-16.1 L-12.9,-17.8 Z" transform="translate(592,214)" fill="url(#go)" stroke="#9a6410" stroke-width="4"/>
+  <text x="512" y="548" text-anchor="middle" font-family="'Arial Black',Helvetica,Arial,sans-serif" font-weight="900" font-size="205" letter-spacing="-8" fill="#ffffff">FDS</text>
+  <rect x="398" y="576" width="228" height="16" rx="8" fill="url(#gb)"/>
+  <polygon points="150,838 250,822 250,904 150,922" fill="#a6720f"/>
+  <polygon points="874,838 774,822 774,904 874,922" fill="#a6720f"/>
+  <rect x="236" y="812" width="552" height="96" rx="16" fill="url(#gb)" stroke="#a6720f" stroke-width="4"/>
+  <text x="512" y="888" text-anchor="middle" font-family="'Arial Black',Helvetica,Arial,sans-serif" font-weight="900" font-size="70" letter-spacing="14" fill="#0a5a2a">CUP</text>
 </svg>
