@@ -23,7 +23,7 @@ const PACKAGES = [
 
 const SPONSOR_PHONE = "089-261-6445";
 const SPONSOR_PHONE_TEL = "0892616445";
-const LINE_OA = "#"; // TODO: ใส่ลิงก์ LINE OA จริง เช่น https://lin.ee/xxxxxxx
+const LINE_OA = "https://line.me/R/ti/p/@016emkmk"; // LINE OA FDS Cup (Basic ID @016emkmk)
 
 export const revalidate = 300;
 
