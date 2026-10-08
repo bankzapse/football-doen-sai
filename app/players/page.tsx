@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     "รวมนักเตะเดินสายทั่วไทยที่กำลังหาทีมลงแข่ง — ดูตำแหน่ง จังหวัด ค่าตัว/เรทต่อแมตช์ และช่องทางติดต่อ ชวนไปร่วมทีมได้เลย",
 };
 
-export const revalidate = 120;
+export const revalidate = 600;
 
 export default async function PlayersPage({
   searchParams,

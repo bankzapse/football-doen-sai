@@ -6,7 +6,7 @@ import Footer from "@/components/Footer";
 import { getPlayerById, getPlayerHistory, POSITION_LABEL, FOOT_LABEL } from "@/lib/players";
 import { formatThaiDate } from "@/lib/format";
 
-export const revalidate = 300;
+export const revalidate = 1800;
 
 export async function generateMetadata({
   params,

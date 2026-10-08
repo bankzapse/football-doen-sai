@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   description: "ผลการแข่งขันและแชมป์ฟุตบอลเดินสายทั่วไทย ย้อนหลังทุกรายการที่จบแล้ว",
 };
 
-export const revalidate = 300;
+export const revalidate = 1800;
 
 export default async function ResultsPage() {
   const finished = await getFinishedTournaments();
