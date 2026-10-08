@@ -18,7 +18,7 @@ export async function generateMetadata({
   };
 }
 
-export const revalidate = 300;
+export const revalidate = 3600;
 
 const POS_LABEL: Record<string, string> = { GK: "ผู้รักษาประตู", DF: "กองหลัง", MF: "กองกลาง", FW: "กองหน้า" };
 

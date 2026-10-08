@@ -25,7 +25,7 @@ const SPONSOR_PHONE = "089-261-6445";
 const SPONSOR_PHONE_TEL = "0892616445";
 const LINE_OA = "https://line.me/R/ti/p/@016emkmk"; // LINE OA FDS Cup (Basic ID @016emkmk)
 
-export const revalidate = 300;
+export const revalidate = 3600;
 
 export default async function SponsorsPage() {
   const sponsors = await getSponsors();
